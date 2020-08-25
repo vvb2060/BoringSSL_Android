@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="io.github.vvb2060.boringssl.test">
+
+    <application
+        android:hasCode="false"
+        android:label="BoringSSL"
+        android:theme="@android:style/Theme.DeviceDefault.Light.DarkActionBar"
+        android:extractNativeLibs="true"
+        tools:ignore="AllowBackup,MissingApplicationIcon"
+        tools:targetApi="m" />
+</manifest>

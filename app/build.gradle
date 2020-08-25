@@ -1,0 +1,47 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion '30.0.2'
+
+    defaultConfig {
+        applicationId 'io.github.vvb2060.boringssl.test'
+        minSdkVersion 16
+        targetSdkVersion 30
+        versionCode 1
+        versionName 'android-r-beta-3'
+        ndkVersion '21.3.6528147'
+        externalNativeBuild {
+            ndkBuild.arguments "-j${Runtime.runtime.availableProcessors()}"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    externalNativeBuild {
+        ndkBuild {
+            path file('../boringssl/src/main/native/Android.mk')
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        buildConfig false
+        prefab true
+    }
+}
+
+dependencies {
+    implementation project(':boringssl')
+}

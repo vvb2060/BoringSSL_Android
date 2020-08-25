@@ -1,0 +1,2 @@
+include ':boringssl'
+include ':app'

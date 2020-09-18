@@ -42,6 +42,10 @@ android {
     }
 }
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    implementation project(':boringssl')
+    implementation 'io.github.vvb2060.ndk:boringssl:1.0'
 }

@@ -9,10 +9,10 @@ This library is based on the [boringssl AOSP repo](https://android.googlesource.
 Gradle:
 
 ```gradle
-implementation 'io.github.vvb2060.boringssl:boringssl:1.0'
+implementation 'io.github.vvb2060.ndk:boringssl:1.0'
 ```
 
-This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.0+):
+This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.1+):
 
 ```gradle
 android {
@@ -33,7 +33,7 @@ For example, if your application defines `libapp.so` and it uses `ssl_static`, y
 
 ```makefile
 include $(CLEAR_VARS)
-LOCAL_MODULE           := libapp
+LOCAL_MODULE           := app
 LOCAL_SRC_FILES        := app.cpp
 LOCAL_STATIC_LIBRARIES := ssl_static
 include $(BUILD_SHARED_LIBRARY)
@@ -53,6 +53,13 @@ you can use `crypto_static`/`ssl_static` in your `CMakeLists.txt`.
 For example, if your application defines `libapp.so` and it uses `crypto_static`, your `CMakeLists.txt` file should include the following:
 
 ```cmake
+add_library(app SHARED app.cpp)
+
+# Add these two lines.
 find_package(boringssl REQUIRED CONFIG)
-target_link_libraries(native-lib boringssl::crypto_static)
+target_link_libraries(app boringssl::crypto_static)
 ```
+
+## Changelog
+
+* 1.0 [android-r-beta-3](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-r-beta-3) [2fb729d4f36beaf263ad85e24a790b571652679c](https://github.com/google/boringssl/tree/2fb729d4f36beaf263ad85e24a790b571652679c)

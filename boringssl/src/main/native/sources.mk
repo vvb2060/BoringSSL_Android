@@ -57,6 +57,7 @@ crypto_sources := \
   src/crypto/bio/printf.c\
   src/crypto/bio/socket.c\
   src/crypto/bio/socket_helper.c\
+  src/crypto/blake2/blake2.c\
   src/crypto/bn_extra/bn_asn1.c\
   src/crypto/bn_extra/convert.c\
   src/crypto/buf/buf.c\
@@ -81,21 +82,22 @@ crypto_sources := \
   src/crypto/conf/conf.c\
   src/crypto/cpu-aarch64-fuchsia.c\
   src/crypto/cpu-aarch64-linux.c\
+  src/crypto/cpu-aarch64-win.c\
   src/crypto/cpu-arm-linux.c\
   src/crypto/cpu-arm.c\
   src/crypto/cpu-intel.c\
   src/crypto/cpu-ppc64le.c\
   src/crypto/crypto.c\
+  src/crypto/curve25519/curve25519.c\
   src/crypto/curve25519/spake25519.c\
-  src/crypto/dh/check.c\
-  src/crypto/dh/dh.c\
-  src/crypto/dh/dh_asn1.c\
-  src/crypto/dh/params.c\
+  src/crypto/dh_extra/dh_asn1.c\
+  src/crypto/dh_extra/params.c\
   src/crypto/digest_extra/digest_extra.c\
   src/crypto/dsa/dsa.c\
   src/crypto/dsa/dsa_asn1.c\
   src/crypto/ec_extra/ec_asn1.c\
   src/crypto/ec_extra/ec_derive.c\
+  src/crypto/ec_extra/hash_to_curve.c\
   src/crypto/ecdh_extra/ecdh_extra.c\
   src/crypto/ecdsa_extra/ecdsa_asn1.c\
   src/crypto/engine/engine.c\
@@ -122,6 +124,7 @@ crypto_sources := \
   src/crypto/fipsmodule/fips_shared_support.c\
   src/crypto/fipsmodule/is_fips.c\
   src/crypto/hkdf/hkdf.c\
+  src/crypto/hpke/hpke.c\
   src/crypto/hrss/hrss.c\
   src/crypto/lhash/lhash.c\
   src/crypto/mem.c\
@@ -147,6 +150,7 @@ crypto_sources := \
   src/crypto/rand_extra/deterministic.c\
   src/crypto/rand_extra/forkunsafe.c\
   src/crypto/rand_extra/fuchsia.c\
+  src/crypto/rand_extra/passive.c\
   src/crypto/rand_extra/rand_extra.c\
   src/crypto/rand_extra/windows.c\
   src/crypto/rc4/rc4.c\
@@ -160,6 +164,9 @@ crypto_sources := \
   src/crypto/thread_none.c\
   src/crypto/thread_pthread.c\
   src/crypto/thread_win.c\
+  src/crypto/trust_token/pmbtoken.c\
+  src/crypto/trust_token/trust_token.c\
+  src/crypto/trust_token/voprf.c\
   src/crypto/x509/a_digest.c\
   src/crypto/x509/a_sign.c\
   src/crypto/x509/a_strex.c\
@@ -235,14 +242,11 @@ crypto_sources := \
   src/crypto/x509v3/v3_pci.c\
   src/crypto/x509v3/v3_pcia.c\
   src/crypto/x509v3/v3_pcons.c\
-  src/crypto/x509v3/v3_pku.c\
   src/crypto/x509v3/v3_pmaps.c\
   src/crypto/x509v3/v3_prn.c\
   src/crypto/x509v3/v3_purp.c\
   src/crypto/x509v3/v3_skey.c\
-  src/crypto/x509v3/v3_sxnet.c\
   src/crypto/x509v3/v3_utl.c\
-  src/third_party/fiat/curve25519.c\
 
 linux_aarch64_sources := \
   linux-aarch64/crypto/chacha/chacha-armv8.S\
@@ -357,6 +361,7 @@ crypto_test_sources := \
   src/crypto/asn1/asn1_test.cc\
   src/crypto/base64/base64_test.cc\
   src/crypto/bio/bio_test.cc\
+  src/crypto/blake2/blake2_test.cc\
   src/crypto/buf/buf_test.cc\
   src/crypto/bytestring/bytestring_test.cc\
   src/crypto/chacha/chacha_test.cc\
@@ -366,10 +371,11 @@ crypto_test_sources := \
   src/crypto/compiler_test.cc\
   src/crypto/constant_time_test.cc\
   src/crypto/cpu-arm-linux_test.cc\
+  src/crypto/crypto_test.cc\
   src/crypto/curve25519/ed25519_test.cc\
   src/crypto/curve25519/spake25519_test.cc\
   src/crypto/curve25519/x25519_test.cc\
-  src/crypto/dh/dh_test.cc\
+  src/crypto/dh_extra/dh_test.cc\
   src/crypto/digest_extra/digest_test.cc\
   src/crypto/dsa/dsa_test.cc\
   src/crypto/ecdh_extra/ecdh_test.cc\
@@ -386,9 +392,11 @@ crypto_test_sources := \
   src/crypto/fipsmodule/md5/md5_test.cc\
   src/crypto/fipsmodule/modes/gcm_test.cc\
   src/crypto/fipsmodule/rand/ctrdrbg_test.cc\
+  src/crypto/fipsmodule/rand/fork_detect_test.cc\
   src/crypto/fipsmodule/sha/sha_test.cc\
   src/crypto/hkdf/hkdf_test.cc\
   src/crypto/hmac_extra/hmac_test.cc\
+  src/crypto/hpke/hpke_test.cc\
   src/crypto/hrss/hrss_test.cc\
   src/crypto/impl_dispatch_test.cc\
   src/crypto/lhash/lhash_test.cc\
@@ -409,6 +417,7 @@ crypto_test_sources := \
   src/crypto/test/file_test_gtest.cc\
   src/crypto/test/gtest_main.cc\
   src/crypto/thread_test.cc\
+  src/crypto/trust_token/trust_token_test.cc\
   src/crypto/x509/x509_test.cc\
   src/crypto/x509/x509_time_test.cc\
   src/crypto/x509v3/tab_test.cc\

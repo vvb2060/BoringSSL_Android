@@ -63,3 +63,4 @@ target_link_libraries(app boringssl::crypto_static)
 ## Changelog
 
 * 1.0 [android-r-beta-3](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-r-beta-3) [2fb729d4f36beaf263ad85e24a790b571652679c](https://github.com/google/boringssl/tree/2fb729d4f36beaf263ad85e24a790b571652679c)
+* 2.0 [android-s-preview-1](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-s-preview-1) [ae2bb641735447496bed334c495e4868b981fe32](https://github.com/google/boringssl/tree/ae2bb641735447496bed334c495e4868b981fe32)

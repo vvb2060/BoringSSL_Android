@@ -57,6 +57,7 @@ crypto_sources := \
   src/crypto/bio/printf.c\
   src/crypto/bio/socket.c\
   src/crypto/bio/socket_helper.c\
+  src/crypto/blake2/blake2.c\
   src/crypto/bn_extra/bn_asn1.c\
   src/crypto/bn_extra/convert.c\
   src/crypto/buf/buf.c\
@@ -81,21 +82,22 @@ crypto_sources := \
   src/crypto/conf/conf.c\
   src/crypto/cpu-aarch64-fuchsia.c\
   src/crypto/cpu-aarch64-linux.c\
+  src/crypto/cpu-aarch64-win.c\
   src/crypto/cpu-arm-linux.c\
   src/crypto/cpu-arm.c\
   src/crypto/cpu-intel.c\
   src/crypto/cpu-ppc64le.c\
   src/crypto/crypto.c\
+  src/crypto/curve25519/curve25519.c\
   src/crypto/curve25519/spake25519.c\
-  src/crypto/dh/check.c\
-  src/crypto/dh/dh.c\
-  src/crypto/dh/dh_asn1.c\
-  src/crypto/dh/params.c\
+  src/crypto/dh_extra/dh_asn1.c\
+  src/crypto/dh_extra/params.c\
   src/crypto/digest_extra/digest_extra.c\
   src/crypto/dsa/dsa.c\
   src/crypto/dsa/dsa_asn1.c\
   src/crypto/ec_extra/ec_asn1.c\
   src/crypto/ec_extra/ec_derive.c\
+  src/crypto/ec_extra/hash_to_curve.c\
   src/crypto/ecdh_extra/ecdh_extra.c\
   src/crypto/ecdsa_extra/ecdsa_asn1.c\
   src/crypto/engine/engine.c\
@@ -122,6 +124,7 @@ crypto_sources := \
   src/crypto/fipsmodule/fips_shared_support.c\
   src/crypto/fipsmodule/is_fips.c\
   src/crypto/hkdf/hkdf.c\
+  src/crypto/hpke/hpke.c\
   src/crypto/hrss/hrss.c\
   src/crypto/lhash/lhash.c\
   src/crypto/mem.c\
@@ -147,6 +150,7 @@ crypto_sources := \
   src/crypto/rand_extra/deterministic.c\
   src/crypto/rand_extra/forkunsafe.c\
   src/crypto/rand_extra/fuchsia.c\
+  src/crypto/rand_extra/passive.c\
   src/crypto/rand_extra/rand_extra.c\
   src/crypto/rand_extra/windows.c\
   src/crypto/rc4/rc4.c\
@@ -160,6 +164,9 @@ crypto_sources := \
   src/crypto/thread_none.c\
   src/crypto/thread_pthread.c\
   src/crypto/thread_win.c\
+  src/crypto/trust_token/pmbtoken.c\
+  src/crypto/trust_token/trust_token.c\
+  src/crypto/trust_token/voprf.c\
   src/crypto/x509/a_digest.c\
   src/crypto/x509/a_sign.c\
   src/crypto/x509/a_strex.c\
@@ -235,14 +242,11 @@ crypto_sources := \
   src/crypto/x509v3/v3_pci.c\
   src/crypto/x509v3/v3_pcia.c\
   src/crypto/x509v3/v3_pcons.c\
-  src/crypto/x509v3/v3_pku.c\
   src/crypto/x509v3/v3_pmaps.c\
   src/crypto/x509v3/v3_prn.c\
   src/crypto/x509v3/v3_purp.c\
   src/crypto/x509v3/v3_skey.c\
-  src/crypto/x509v3/v3_sxnet.c\
   src/crypto/x509v3/v3_utl.c\
-  src/third_party/fiat/curve25519.c\
 
 ssl_sources := \
   src/ssl/bio_ssl.cc\
@@ -288,6 +292,7 @@ tool_sources := \
   src/tool/client.cc\
   src/tool/const.cc\
   src/tool/digest.cc\
+  src/tool/fd.cc\
   src/tool/file.cc\
   src/tool/generate_ed25519.cc\
   src/tool/genrsa.cc\

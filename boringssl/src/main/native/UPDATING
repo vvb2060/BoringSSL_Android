@@ -7,22 +7,33 @@ rm -Rf src
 git clone https://boringssl.googlesource.com/boringssl src
 cd src
 new_revision=$(git show -s --pretty=%H)
+msgfile=$(mktemp)
+
+echo "external/boringssl: Sync to ${new_revision}.
+
+This includes the following changes:
+
+https://boringssl.googlesource.com/boringssl/+log/${old_revision}..${new_revision}
+" > $msgfile
+
+# Just pull out commit titles and any Update-Note paragraphs for AOSP commit summary
+git log --format='format:* %s%n%n%b' ${old_revision}..${new_revision} \
+  | awk -v RS='' -v ORS='\n' '/^Update-Note/ {print} /^\*/ {print}' \
+  >> $msgfile
+
+
 cd ..
+echo "
+Test: atest CtsLibcoreTestCases CtsLibcoreOkHttpTestCases" >> $msgfile
 echo ${new_revision} > BORINGSSL_REVISION
 
 rm -Rf src/.git
 rm -Rf src/fuzz
 rm -Rf src/third_party/googletest
 rm -Rf linux-aarch64/ linux-arm/ linux-x86/ linux-x86_64/ mac-x86/ mac-x86_64/ win-x86_64/ win-x86/
-python src/util/generate_build_files.py android android-cmake eureka
+python src/util/generate_build_files.py android android-cmake bazel eureka
 cp src/LICENSE NOTICE
 
 git add .
-git commit -m "external/boringssl: Sync to ${new_revision}.
-
-This includes the following changes:
-
-https://boringssl.googlesource.com/boringssl/+log/${old_revision}..${new_revision}
-
-Test: atest CtsLibcoreTestCases (TODO)
-"
+git commit -F $msgfile
+rm -f $msgfile

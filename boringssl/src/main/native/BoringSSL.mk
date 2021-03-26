@@ -18,7 +18,8 @@ LOCAL_C_INCLUDES        := $(LOCAL_PATH)/src/crypto
 LOCAL_C_INCLUDES        += $(LOCAL_PATH)/src/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/src/include
 # https://gist.github.com/vvb2060/56d5b8fda2553f36938b2b72b1390114
-STATIC_LIBRARY_STRIP    := true
+LOCAL_STATIC_OBJCOPY    := true
+LOCAL_OBJCOPY_MODE      := --strip-unneeded -R .comment
 include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
@@ -27,5 +28,6 @@ LOCAL_SRC_FILES         := $(libssl_sources)
 LOCAL_C_INCLUDES        := $(LOCAL_PATH)/src/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/src/include
 LOCAL_STATIC_LIBRARIES  := crypto_static
-STATIC_LIBRARY_STRIP    := true
+LOCAL_STATIC_OBJCOPY    := true
+LOCAL_OBJCOPY_MODE      := --strip-unneeded -R .comment
 include $(BUILD_STATIC_LIBRARY)

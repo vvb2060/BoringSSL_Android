@@ -16,6 +16,6 @@ LOCAL_SRC_FILES         := $(ssl_test_sources)
 LOCAL_SRC_FILES         += $(test_support_sources)
 include $(LOCAL_PATH)/build-executable.mk
 
-include $(LOCAL_PATH)/BoringSSL.mk
+#include $(LOCAL_PATH)/BoringSSL.mk
 $(call import-module,third_party/googletest)
-#$(call import-module,prefab/boringssl)
+$(call import-module,prefab/boringssl)

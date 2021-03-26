@@ -46,5 +46,5 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.github.vvb2060.ndk:boringssl:1.0'
+    implementation 'io.github.vvb2060.ndk:boringssl:2.0'
 }

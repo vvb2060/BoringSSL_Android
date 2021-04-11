@@ -1,11 +1,13 @@
 plugins {
     id 'com.android.library'
+    id 'maven-publish'
+    id 'signing'
 }
 
 android {
     compileSdkVersion 30
     buildToolsVersion '30.0.3'
-    ndkVersion '21.3.6528147'
+    ndkVersion '21.4.7075529'
     defaultConfig {
 
         minSdkVersion 16
@@ -44,5 +46,90 @@ android {
         crypto_static {
             headers "src/main/native/src/include"
         }
+    }
+}
+
+afterEvaluate {
+    android.libraryVariants.collect { variant ->
+        task("generate${variant.name.capitalize()}SourcesJar", type: Jar) {
+            from variant.javaCompileProvider.get().source
+            classifier 'sources'
+        }
+        task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
+            if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
+                options.addStringOption "-release", "8"
+            }
+            source variant.javaCompileProvider.get().source
+            classpath += variant.javaCompileProvider.get().classpath
+            classpath += files(android.getBootClasspath())
+            options {
+                failOnError false
+                encoding 'UTF-8'
+            }
+        }
+        task("generate${variant.name.capitalize()}JavadocJar", type: Jar) {
+            dependsOn "generate${variant.name.capitalize()}Javadoc"
+            from tasks.getByName("generate${variant.name.capitalize()}Javadoc").destinationDir
+            classifier 'javadoc'
+        }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            group 'io.github.vvb2060.ndk'
+            artifactId 'boringssl'
+            version '2.1'
+            afterEvaluate {
+                artifact tasks.getByName("bundleReleaseAar")
+                artifact tasks.getByName("generateReleaseJavadocJar")
+                artifact tasks.getByName("generateReleaseSourcesJar")
+            }
+            pom {
+                name = 'boringssl'
+                description = 'boringssl static library prefab for android.'
+                url = 'https://github.com/vvb2060/BoringSSL_Android'
+                licenses {
+                    license {
+                        name = 'OpenSSL'
+                        url = 'https://www.openssl.org/source/license.html'
+                    }
+                    license {
+                        name = 'ISC'
+                        url = 'https://opensource.org/licenses/isc-license.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'vvb2060'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/vvb2060/BoringSSL_Android.git'
+                    url = 'https://github.com/vvb2060/BoringSSL_Android'
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name 'ossrh'
+            url 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials(PasswordCredentials)
+        }
+    }
+}
+
+signing {
+    def signingKey = findProperty("signingKey")
+    def signingPassword = findProperty("signingPassword")
+    def secretKeyRingFile = findProperty("signing.secretKeyRingFile")
+
+    if (secretKeyRingFile != null && file(secretKeyRingFile).exists()) {
+        sign publishing.publications
+    } else if (signingKey != null) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign publishing.publications
     }
 }

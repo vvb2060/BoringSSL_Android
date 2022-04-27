@@ -5,15 +5,14 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
-    buildToolsVersion '30.0.3'
-    ndkVersion '21.4.7075529'
+    compileSdkVersion 32
+    buildToolsVersion '32.0.0'
+    ndkVersion '23.1.7779620'
     defaultConfig {
-
         minSdkVersion 16
-        targetSdkVersion 30
-        versionCode 2
-        versionName 'android-s-preview-1'
+        targetSdkVersion 32
+        versionCode 3
+        versionName 'android-t-preview-2'
         externalNativeBuild {
             ndkBuild.arguments "-j${Runtime.runtime.availableProcessors()}"
         }
@@ -47,30 +46,11 @@ android {
             headers "src/main/native/src/include"
         }
     }
-}
 
-afterEvaluate {
-    android.libraryVariants.collect { variant ->
-        task("generate${variant.name.capitalize()}SourcesJar", type: Jar) {
-            from variant.javaCompileProvider.get().source
-            classifier 'sources'
-        }
-        task("generate${variant.name.capitalize()}Javadoc", type: Javadoc) {
-            if (JavaVersion.current() >= JavaVersion.VERSION_1_9) {
-                options.addStringOption "-release", "8"
-            }
-            source variant.javaCompileProvider.get().source
-            classpath += variant.javaCompileProvider.get().classpath
-            classpath += files(android.getBootClasspath())
-            options {
-                failOnError false
-                encoding 'UTF-8'
-            }
-        }
-        task("generate${variant.name.capitalize()}JavadocJar", type: Jar) {
-            dependsOn "generate${variant.name.capitalize()}Javadoc"
-            from tasks.getByName("generate${variant.name.capitalize()}Javadoc").destinationDir
-            classifier 'javadoc'
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
         }
     }
 }
@@ -80,11 +60,9 @@ publishing {
         mavenJava(MavenPublication) {
             group 'io.github.vvb2060.ndk'
             artifactId 'boringssl'
-            version '2.1'
+            version '3.0'
             afterEvaluate {
-                artifact tasks.getByName("bundleReleaseAar")
-                artifact tasks.getByName("generateReleaseJavadocJar")
-                artifact tasks.getByName("generateReleaseSourcesJar")
+                from components.release
             }
             pom {
                 name = 'boringssl'

@@ -9,7 +9,7 @@ This library is based on the [boringssl AOSP repo](https://android.googlesource.
 Gradle:
 
 ```gradle
-implementation 'io.github.vvb2060.ndk:boringssl:2.1'
+implementation 'io.github.vvb2060.ndk:boringssl:3.0'
 ```
 
 This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.1+):
@@ -64,3 +64,4 @@ target_link_libraries(app boringssl::crypto_static)
 
 * 1.0 [android-r-beta-3](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-r-beta-3) [2fb729d4f36beaf263ad85e24a790b571652679c](https://github.com/google/boringssl/tree/2fb729d4f36beaf263ad85e24a790b571652679c)
 * 2.0 [android-s-preview-1](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-s-preview-1) [ae2bb641735447496bed334c495e4868b981fe32](https://github.com/google/boringssl/tree/ae2bb641735447496bed334c495e4868b981fe32)
+* 3.0 [android-t-preview-2](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-t-preview-2) [345c86b1cfcc478a71a9a71f0206893fd16ae912](https://github.com/google/boringssl/tree/345c86b1cfcc478a71a9a71f0206893fd16ae912)

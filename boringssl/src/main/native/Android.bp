@@ -51,7 +51,6 @@ cc_defaults {
         "-DBORINGSSL_SHARED_LIBRARY",
         "-DBORINGSSL_ANDROID_SYSTEM",
         "-DOPENSSL_SMALL",
-        "-D_XOPEN_SOURCE=700",
         "-Werror",
         "-Wno-unused-parameter",
     ],
@@ -66,6 +65,12 @@ cc_defaults {
     // Build BoringSSL and its tests against the same STL.
     sdk_version: "9",
     target: {
+        linux: {
+            cflags: ["-D_XOPEN_SOURCE=700"],
+        },
+        windows: {
+            cflags: ["-D_XOPEN_SOURCE=700"],
+        },
         android: {
             stl: "libc++_static",
         },
@@ -129,11 +134,7 @@ cc_object {
         fuzzer: false,
     },
     target: {
-        linux_bionic: {
-            header_libs: ["libc_headers"], // TODO(b/153662223): Clean this up.
-        },
         android: {
-            header_libs: ["libc_headers"], // TODO(b/153662223): Clean this up.
             cflags: [
                 "-DBORINGSSL_FIPS",
                 "-fPIC",
@@ -163,9 +164,9 @@ cc_object {
         "com.android.art",
         "com.android.art.debug",
         "com.android.art.testing",
-        "com.android.bluetooth.updatable",
+        "com.android.bluetooth",
+        "com.android.compos",
         "com.android.conscrypt",
-        "com.android.media",
         "com.android.resolv",
         "com.android.virt",
     ],
@@ -251,9 +252,9 @@ cc_library {
         "com.android.art",
         "com.android.art.debug",
         "com.android.art.testing",
-        "com.android.bluetooth.updatable",
+        "com.android.bluetooth",
+        "com.android.compos",
         "com.android.conscrypt",
-        "com.android.media",
         "com.android.resolv",
         "com.android.virt",
     ],
@@ -271,6 +272,7 @@ cc_library_static {
         "//bootable/recovery/updater",
         "//external/conscrypt",
         "//external/python/cpython2",
+        "//external/rust/crates/quiche",
         // Strictly, only the *static* toybox for legacy devices should have
         // access to libcrypto_static, but we can't express that.
         "//external/toybox",
@@ -281,9 +283,9 @@ cc_library_static {
         "//hardware/interfaces/keymaster/3.0/vts/functional",
         "//hardware/interfaces/keymaster/4.0/vts/functional",
         "//hardware/interfaces/keymaster/4.1/vts/functional",
+        "//packages/modules/adb",
         "//packages/modules/DnsResolver/tests:__subpackages__",
         "//packages/modules/NeuralNetworks:__subpackages__",
-        "//system/core/adb",
         "//system/core/init",
         "//system/core/fs_mgr/liblp",
         "//system/core/fs_mgr/liblp/vts_core",
@@ -302,6 +304,36 @@ cc_library_static {
         "libcrypto_defaults",
         "boringssl_defaults",
         "boringssl_flags",
+    ],
+}
+
+// Common defaults for lib*_fuzz_unsafe. These are unsafe and deterministic
+// libraries for testing and fuzzing only. See src/FUZZING.md.
+cc_defaults {
+    name: "boringssl_fuzz_unsafe_defaults",
+    host_supported: true,
+    cflags: [
+        "-DBORINGSSL_UNSAFE_DETERMINISTIC_MODE",
+        "-DBORINGSSL_UNSAFE_FUZZER_MODE",
+    ],
+    visibility: [
+        "//frameworks/native/libs/binder/tests:__subpackages__",
+    ],
+}
+
+// Unsafe and deterministic version of libcrypto. For testing and fuzzing only.
+// See src/FUZZING.md.
+cc_test_library {
+    name: "libcrypto_fuzz_unsafe",
+    ramdisk_available: false,
+    vendor_ramdisk_available: false,
+    defaults: [
+        "libcrypto_bcm_sources",
+        "libcrypto_sources",
+        "libcrypto_defaults",
+        "boringssl_defaults",
+        "boringssl_flags",
+        "boringssl_fuzz_unsafe_defaults",
     ],
 }
 
@@ -337,11 +369,28 @@ cc_library {
 
     apex_available: [
         "//apex_available:platform",
+        "com.android.bluetooth",
         "com.android.adbd",
         "com.android.conscrypt",
         "com.android.resolv",
     ],
     min_sdk_version: "29",
+}
+
+// Unsafe and deterministic version of libssl. For testing and fuzzing only.
+// See src/FUZZING.md.
+cc_test_library {
+    name: "libssl_fuzz_unsafe",
+    host_supported: true,
+    defaults: [
+        "libssl_sources",
+        "boringssl_defaults",
+        "boringssl_flags",
+        "boringssl_fuzz_unsafe_defaults",
+    ],
+    static_libs: [
+        "libcrypto_fuzz_unsafe",
+    ],
 }
 
 // Tool
@@ -423,7 +472,42 @@ cc_binary {
 // Not installed on devices by default.
 cc_binary {
     name: "acvp_modulewrapper",
+    srcs: [
+        "src/util/fipstools/acvp/modulewrapper/main.cc",
+    ],
+    target: {
+        android_x86: {
+            enabled: false,
+        },
+        android_x86_64: {
+            enabled: false,
+        },
+    },
+    stem: "modulewrapper",
+    compile_multilib: "both",
+    multilib: {
+        lib32: {
+            suffix: "32",
+        },
+    },
+
+    static_libs: [
+        "libacvp_modulewrapper",
+    ],
+    shared_libs: [
+        "libcrypto",
+    ],
+
+    defaults: [
+        "boringssl_flags",
+    ],
+}
+
+// ACVP wrapper implementation shared between Android and Trusty
+cc_library_static {
+    name: "libacvp_modulewrapper",
     host_supported: true,
+    vendor_available: true,
     srcs: [
         "src/util/fipstools/acvp/modulewrapper/modulewrapper.cc",
     ],
@@ -432,13 +516,7 @@ cc_binary {
             compile_multilib: "both",
         },
     },
-    stem: "modulewrapper",
-    multilib: {
-        lib32: {
-            suffix: "32",
-        },
-    },
-
+    export_include_dirs: ["src/util/fipstools/acvp/modulewrapper/"],
     shared_libs: [
         "libcrypto",
     ],
@@ -446,6 +524,8 @@ cc_binary {
     defaults: [
         "boringssl_flags",
     ],
+
+    visibility: ["//system/core/trusty/utils/acvp"],
 }
 
 // Test support library

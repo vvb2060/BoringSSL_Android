@@ -35,5 +35,5 @@ python src/util/generate_build_files.py android android-cmake bazel eureka
 cp src/LICENSE NOTICE
 
 git add .
-git commit -F $msgfile
+git commit --no-verify -F $msgfile
 rm -f $msgfile

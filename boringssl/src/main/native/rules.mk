@@ -53,6 +53,10 @@ LOCAL_SRC_FILES := $(filter-out src/crypto/x509/by_dir.c,$(LOCAL_SRC_FILES))
 # no-op threading functions.
 MODULE_CFLAGS += -DTRUSTY
 
+# The AOSP stdatomic.h clang header does not build against musl. Disable C11
+# atomics.
+MODULE_CFLAGS += -D__STDC_NO_ATOMICS__
+
 # Define static armcap based on lk build variables
 MODULE_STATIC_ARMCAP := -DOPENSSL_STATIC_ARMCAP
 toarmcap = $(if $(filter-out 0 false,$(2)),-DOPENSSL_STATIC_ARMCAP_$(1),)
@@ -64,17 +68,27 @@ MODULE_STATIC_ARMCAP += $(call toarmcap,SHA256,$(USE_ARM_V8_SHA2))
 MODULE_CFLAGS += $(MODULE_STATIC_ARMCAP)
 MODULE_ASMFLAGS += $(MODULE_STATIC_ARMCAP)
 
+ifeq (false,$(call TOBOOL,$(ALLOW_FP_USE)))
+# chacha, ghash, vpaes, sha1, and sha256 assembly files use neon instructions,
+# which we aren't allowed to do in the kernel if ALLOW_FP_USE is disabled. This
+# means that the kernel can't use these functions, but we don't need to for now.
+# If someone ever tries to, we will get missing symbols during linking.
+LOCAL_SRC_FILES_$(ARCH) := $(filter-out linux-aarch64/crypto/chacha/chacha-armv8.S,$(LOCAL_SRC_FILES_$(ARCH)))
+LOCAL_SRC_FILES_$(ARCH) := $(filter-out linux-aarch64/crypto/fipsmodule/ghash-neon-armv8.S,$(LOCAL_SRC_FILES_$(ARCH)))
+LOCAL_SRC_FILES_$(ARCH) := $(filter-out linux-aarch64/crypto/fipsmodule/vpaes-armv8.S,$(LOCAL_SRC_FILES_$(ARCH)))
+LOCAL_SRC_FILES_$(ARCH) := $(filter-out linux-aarch64/crypto/fipsmodule/sha1-armv8.S,$(LOCAL_SRC_FILES_$(ARCH)))
+LOCAL_SRC_FILES_$(ARCH) := $(filter-out linux-aarch64/crypto/fipsmodule/sha256-armv8.S,$(LOCAL_SRC_FILES_$(ARCH)))
+LOCAL_SRC_FILES_$(ARCH) := $(filter-out linux-aarch64/crypto/test/trampoline-armv8.S,$(LOCAL_SRC_FILES_$(ARCH)))
+endif
+
 MODULE_SRCS += $(addprefix $(LOCAL_DIR)/,$(LOCAL_SRC_FILES))
 MODULE_SRCS += $(addprefix $(LOCAL_DIR)/,$(LOCAL_SRC_FILES_$(ARCH)))
-LOCAL_C_INCLUDES := src/crypto src/include
 
-GLOBAL_INCLUDES += $(addprefix $(LOCAL_DIR)/,$(LOCAL_C_INCLUDES))
+MODULE_INCLUDES += $(LOCAL_DIR)/src/crypto
 
-# BoringSSL expects an STL to be available when building for C++11 to provide
-# scopers. Suppress those APIs.
-GLOBAL_CPPFLAGS += -DBORINGSSL_NO_CXX
+MODULE_EXPORT_INCLUDES += $(LOCAL_DIR)/src/include
 
-MODULE_DEPS := \
-	lib/openssl-stubs \
+MODULE_LIBRARY_DEPS += \
+	trusty/user/base/lib/openssl-stubs \
 
-include make/module.mk
+include make/library.mk

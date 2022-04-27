@@ -28,6 +28,7 @@ crypto_sources := \
   src/crypto/asn1/a_object.c\
   src/crypto/asn1/a_octet.c\
   src/crypto/asn1/a_print.c\
+  src/crypto/asn1/a_strex.c\
   src/crypto/asn1/a_strnid.c\
   src/crypto/asn1/a_time.c\
   src/crypto/asn1/a_type.c\
@@ -36,7 +37,6 @@ crypto_sources := \
   src/crypto/asn1/asn1_lib.c\
   src/crypto/asn1/asn1_par.c\
   src/crypto/asn1/asn_pack.c\
-  src/crypto/asn1/f_enum.c\
   src/crypto/asn1/f_int.c\
   src/crypto/asn1/f_string.c\
   src/crypto/asn1/tasn_dec.c\
@@ -80,13 +80,14 @@ crypto_sources := \
   src/crypto/cipher_extra/tls_cbc.c\
   src/crypto/cmac/cmac.c\
   src/crypto/conf/conf.c\
-  src/crypto/cpu-aarch64-fuchsia.c\
-  src/crypto/cpu-aarch64-linux.c\
-  src/crypto/cpu-aarch64-win.c\
-  src/crypto/cpu-arm-linux.c\
-  src/crypto/cpu-arm.c\
-  src/crypto/cpu-intel.c\
-  src/crypto/cpu-ppc64le.c\
+  src/crypto/cpu_aarch64_apple.c\
+  src/crypto/cpu_aarch64_fuchsia.c\
+  src/crypto/cpu_aarch64_linux.c\
+  src/crypto/cpu_aarch64_win.c\
+  src/crypto/cpu_arm.c\
+  src/crypto/cpu_arm_linux.c\
+  src/crypto/cpu_intel.c\
+  src/crypto/cpu_ppc64le.c\
   src/crypto/crypto.c\
   src/crypto/curve25519/curve25519.c\
   src/crypto/curve25519/spake25519.c\
@@ -122,7 +123,6 @@ crypto_sources := \
   src/crypto/ex_data.c\
   src/crypto/fipsmodule/bcm.c\
   src/crypto/fipsmodule/fips_shared_support.c\
-  src/crypto/fipsmodule/is_fips.c\
   src/crypto/hkdf/hkdf.c\
   src/crypto/hpke/hpke.c\
   src/crypto/hrss/hrss.c\
@@ -169,13 +169,13 @@ crypto_sources := \
   src/crypto/trust_token/voprf.c\
   src/crypto/x509/a_digest.c\
   src/crypto/x509/a_sign.c\
-  src/crypto/x509/a_strex.c\
   src/crypto/x509/a_verify.c\
   src/crypto/x509/algorithm.c\
   src/crypto/x509/asn1_gen.c\
   src/crypto/x509/by_dir.c\
   src/crypto/x509/by_file.c\
   src/crypto/x509/i2d_pr.c\
+  src/crypto/x509/name_print.c\
   src/crypto/x509/rsa_pss.c\
   src/crypto/x509/t_crl.c\
   src/crypto/x509/t_req.c\
@@ -189,7 +189,6 @@ crypto_sources := \
   src/crypto/x509/x509_ext.c\
   src/crypto/x509/x509_lu.c\
   src/crypto/x509/x509_obj.c\
-  src/crypto/x509/x509_r2x.c\
   src/crypto/x509/x509_req.c\
   src/crypto/x509/x509_set.c\
   src/crypto/x509/x509_trs.c\
@@ -256,6 +255,8 @@ ssl_sources := \
   src/ssl/d1_srtp.cc\
   src/ssl/dtls_method.cc\
   src/ssl/dtls_record.cc\
+  src/ssl/encrypted_client_hello.cc\
+  src/ssl/extensions.cc\
   src/ssl/handoff.cc\
   src/ssl/handshake.cc\
   src/ssl/handshake_client.cc\
@@ -278,7 +279,6 @@ ssl_sources := \
   src/ssl/ssl_versions.cc\
   src/ssl/ssl_x509.cc\
   src/ssl/t1_enc.cc\
-  src/ssl/t1_lib.cc\
   src/ssl/tls13_both.cc\
   src/ssl/tls13_client.cc\
   src/ssl/tls13_enc.cc\
@@ -294,6 +294,7 @@ tool_sources := \
   src/tool/digest.cc\
   src/tool/fd.cc\
   src/tool/file.cc\
+  src/tool/generate_ech.cc\
   src/tool/generate_ed25519.cc\
   src/tool/genrsa.cc\
   src/tool/pkcs12.cc\

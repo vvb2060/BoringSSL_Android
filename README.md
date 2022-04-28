@@ -60,6 +60,21 @@ find_package(boringssl REQUIRED CONFIG)
 target_link_libraries(app boringssl::crypto_static)
 ```
 
+### git submodule
+
+If you don't want to use prefab and want to compile entirely from source code,
+for example to enable LTO, you can import this project as a git submodule.
+
+```makefile
+include $(CLEAR_VARS)
+LOCAL_MODULE           := app
+LOCAL_SRC_FILES        := app.cpp
+LOCAL_STATIC_LIBRARIES := ssl_static
+include $(BUILD_SHARED_LIBRARY)
+
+include [submodule path]/boringssl/src/main/native/BoringSSL.mk
+```
+
 ## Changelog
 
 * 1.0 [android-r-beta-3](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-r-beta-3) [2fb729d4f36beaf263ad85e24a790b571652679c](https://github.com/google/boringssl/tree/2fb729d4f36beaf263ad85e24a790b571652679c)

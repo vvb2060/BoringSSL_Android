@@ -75,12 +75,13 @@ publishing {
                     }
                     license {
                         name = 'ISC'
-                        url = 'https://opensource.org/licenses/isc-license.txt'
+                        url = 'https://github.com/google/boringssl/blob/master/LICENSE'
                     }
                 }
                 developers {
                     developer {
                         name = 'vvb2060'
+                        url = 'https://github.com/vvb2060'
                     }
                 }
                 scm {

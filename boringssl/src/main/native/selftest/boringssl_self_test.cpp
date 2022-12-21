@@ -16,12 +16,16 @@
 
 #include <openssl/crypto.h>
 
+// This program is run early during boot and if it exits with a
+// failure status then the device will reboot to the bootloader.
+// See init.rc for details.
+// It may also exit before reaching main() if BoringSSL fast tests fail.
 int main(int, char**) {
-    // If we get here, then libcrypto is either in FIPS mode (in which case
-    // it doesn't run the self test), or the self test has passed. If the
-    // self test ran and failed, then libcrypto will already have abort()ed.
     if (!FIPS_mode()) {
-        return 1;  // failure
+        return 1;  // Fail: BoringSSL not built in FIPS mode.
     }
-    return 0;  // success
+    if (!BORINGSSL_self_test()) {
+        return 1;  // Fail: One or more self tests failed.
+    }
+    return 0;      // Success
 }

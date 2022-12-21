@@ -20,7 +20,6 @@ crypto_sources := \
   src/crypto/asn1/a_bool.c\
   src/crypto/asn1/a_d2i_fp.c\
   src/crypto/asn1/a_dup.c\
-  src/crypto/asn1/a_enum.c\
   src/crypto/asn1/a_gentm.c\
   src/crypto/asn1/a_i2d_fp.c\
   src/crypto/asn1/a_int.c\
@@ -69,16 +68,15 @@ crypto_sources := \
   src/crypto/chacha/chacha.c\
   src/crypto/cipher_extra/cipher_extra.c\
   src/crypto/cipher_extra/derive_key.c\
-  src/crypto/cipher_extra/e_aesccm.c\
   src/crypto/cipher_extra/e_aesctrhmac.c\
   src/crypto/cipher_extra/e_aesgcmsiv.c\
   src/crypto/cipher_extra/e_chacha20poly1305.c\
+  src/crypto/cipher_extra/e_des.c\
   src/crypto/cipher_extra/e_null.c\
   src/crypto/cipher_extra/e_rc2.c\
   src/crypto/cipher_extra/e_rc4.c\
   src/crypto/cipher_extra/e_tls.c\
   src/crypto/cipher_extra/tls_cbc.c\
-  src/crypto/cmac/cmac.c\
   src/crypto/conf/conf.c\
   src/crypto/cpu_aarch64_apple.c\
   src/crypto/cpu_aarch64_fuchsia.c\
@@ -91,6 +89,7 @@ crypto_sources := \
   src/crypto/crypto.c\
   src/crypto/curve25519/curve25519.c\
   src/crypto/curve25519/spake25519.c\
+  src/crypto/des/des.c\
   src/crypto/dh_extra/dh_asn1.c\
   src/crypto/dh_extra/params.c\
   src/crypto/digest_extra/digest_extra.c\
@@ -103,7 +102,6 @@ crypto_sources := \
   src/crypto/ecdsa_extra/ecdsa_asn1.c\
   src/crypto/engine/engine.c\
   src/crypto/err/err.c\
-  src/crypto/evp/digestsign.c\
   src/crypto/evp/evp.c\
   src/crypto/evp/evp_asn1.c\
   src/crypto/evp/evp_ctx.c\
@@ -307,10 +305,13 @@ tool_sources := \
 
 linux_aarch64_sources := \
   linux-aarch64/crypto/chacha/chacha-armv8.S\
+  linux-aarch64/crypto/cipher_extra/chacha20_poly1305_armv8.S\
   linux-aarch64/crypto/fipsmodule/aesv8-armx64.S\
   linux-aarch64/crypto/fipsmodule/armv8-mont.S\
   linux-aarch64/crypto/fipsmodule/ghash-neon-armv8.S\
   linux-aarch64/crypto/fipsmodule/ghashv8-armx64.S\
+  linux-aarch64/crypto/fipsmodule/p256-armv8-asm.S\
+  linux-aarch64/crypto/fipsmodule/p256_beeu-armv8-asm.S\
   linux-aarch64/crypto/fipsmodule/sha1-armv8.S\
   linux-aarch64/crypto/fipsmodule/sha256-armv8.S\
   linux-aarch64/crypto/fipsmodule/sha512-armv8.S\

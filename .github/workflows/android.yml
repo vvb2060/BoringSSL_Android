@@ -13,13 +13,14 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          distribution: 'temurin'
+          java-version: '17'
       - name: Configuration Environment
         shell: bash
         run: |
@@ -29,7 +30,7 @@ jobs:
           echo 'org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8' >> gradle.properties
           echo 'org.gradle.caching=true' >> gradle.properties
           echo 'org.gradle.parallel=true' >> gradle.properties
-          echo -e "84831b9409646a918e30573bab4c9c91346d8abd" > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
+          echo '84831b9409646a918e30573bab4c9c91346d8abd' > $ANDROID_SDK_ROOT/licenses/android-sdk-preview-license
       - name: Build with Gradle
         run: |
           ./gradlew :b:publishToMavenLocal
@@ -41,12 +42,12 @@ jobs:
           ls -l app/build/outputs/androidTest-results/managedDevice/atd64bit/testlog
           rm -v app/build/outputs/androidTest-results/managedDevice/*/testlog/adb.additional_test_output*
       - name: Upload app
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}-app
           path: app/build/outputs
       - name: Upload library
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ${{ matrix.os }}-library
           path: ~/.m2

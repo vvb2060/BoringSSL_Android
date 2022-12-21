@@ -9,7 +9,7 @@ This library is based on the [boringssl AOSP repo](https://android.googlesource.
 Gradle:
 
 ```gradle
-implementation 'io.github.vvb2060.ndk:boringssl:3.0'
+implementation 'io.github.vvb2060.ndk:boringssl:3.1'
 ```
 
 This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.1+):
@@ -28,7 +28,7 @@ android {
 
 ### ndk-build
 
-you can use `crypto_static`/`ssl_static` in your `Android.mk`. 
+you can use `crypto_static`/`ssl_static` in your `Android.mk`.
 For example, if your application defines `libapp.so` and it uses `ssl_static`, your `Android.mk` file should include the following:
 
 ```makefile
@@ -49,7 +49,7 @@ $(call import-module,prefab/boringssl)
 
 ### CMake
 
-you can use `crypto_static`/`ssl_static` in your `CMakeLists.txt`. 
+you can use `crypto_static`/`ssl_static` in your `CMakeLists.txt`.
 For example, if your application defines `libapp.so` and it uses `crypto_static`, your `CMakeLists.txt` file should include the following:
 
 ```cmake
@@ -80,3 +80,4 @@ include [submodule path]/boringssl/src/main/native/BoringSSL.mk
 * 1.0 [android-r-beta-3](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-r-beta-3) [2fb729d4f36beaf263ad85e24a790b571652679c](https://github.com/google/boringssl/tree/2fb729d4f36beaf263ad85e24a790b571652679c)
 * 2.0 [android-s-preview-1](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-s-preview-1) [ae2bb641735447496bed334c495e4868b981fe32](https://github.com/google/boringssl/tree/ae2bb641735447496bed334c495e4868b981fe32)
 * 3.0 [android-t-preview-2](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-t-preview-2) [345c86b1cfcc478a71a9a71f0206893fd16ae912](https://github.com/google/boringssl/tree/345c86b1cfcc478a71a9a71f0206893fd16ae912)
+* 3.1 [android-13.0.0_r18](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-13.0.0_r18) [base 1530333b25589ee4d4d52b10e78ee55dd82f6dcd](https://github.com/google/boringssl/tree/1530333b25589ee4d4d52b10e78ee55dd82f6dcd) [patch adeb743478cf1894e0148e46044dc51f091a312e](https://github.com/google/boringssl/tree/adeb743478cf1894e0148e46044dc51f091a312e)

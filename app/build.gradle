@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '32.0.0'
-    ndkVersion '23.1.7779620'
+    compileSdkVersion 33
+    buildToolsVersion '33.0.1'
+    ndkVersion '25.1.8937393'
+    namespace 'io.github.vvb2060.ndk.boringssl.test'
     defaultConfig {
-        applicationId 'io.github.vvb2060.boringssl.test'
-        minSdkVersion 16
-        targetSdkVersion 32
-        versionCode 3
-        versionName 'android-t-preview-2'
+        minSdkVersion 19
+        targetSdkVersion 33
+        versionCode 4
+        versionName 'android-13.0.0_r18'
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         externalNativeBuild {
             ndkBuild.arguments "-j${Runtime.runtime.availableProcessors()}"
@@ -67,7 +67,7 @@ android {
 }
 
 dependencies {
-//    implementation 'io.github.vvb2060.ndk:boringssl:3.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test:rules:1.4.0'
+//    implementation 'io.github.vvb2060.ndk:boringssl:3.1'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.4'
+    androidTestImplementation 'androidx.test:rules:1.5.0'
 }

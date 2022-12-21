@@ -5,22 +5,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 32
-    buildToolsVersion '32.0.0'
-    ndkVersion '23.1.7779620'
+    compileSdkVersion 33
+    buildToolsVersion '33.0.1'
+    ndkVersion '25.1.8937393'
+    namespace 'io.github.vvb2060.ndk.boringssl'
     defaultConfig {
-        minSdkVersion 16
-        targetSdkVersion 32
-        versionCode 3
-        versionName 'android-t-preview-2'
+        minSdkVersion 19
+        targetSdkVersion 33
         externalNativeBuild {
             ndkBuild.arguments "-j${Runtime.runtime.availableProcessors()}"
-        }
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled true
         }
     }
 
@@ -60,7 +53,7 @@ publishing {
         mavenJava(MavenPublication) {
             group 'io.github.vvb2060.ndk'
             artifactId 'boringssl'
-            version '3.0'
+            version '3.1'
             afterEvaluate {
                 from components.release
             }

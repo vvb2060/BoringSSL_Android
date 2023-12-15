@@ -2,14 +2,26 @@
 
 set -xe
 
+# If a branch name is passed on the command line then sync
+# to that instead of HEAD.
+branch="$1"
+
 old_revision=$(cat BORINGSSL_REVISION)
 rm -Rf src
 git clone https://boringssl.googlesource.com/boringssl src
 cd src
+if [ "$branch" ]; then
+  git checkout "$branch"
+fi
 new_revision=$(git show -s --pretty=%H)
+if [ "$branch" ]; then
+  target="branch $branch"
+else
+  target="$new_revision"
+fi
 msgfile=$(mktemp)
 
-echo "external/boringssl: Sync to ${new_revision}.
+echo "external/boringssl: Sync to ${target}.
 
 This includes the following changes:
 
@@ -24,16 +36,21 @@ git log --format='format:* %s%n%n%b' ${old_revision}..${new_revision} \
 
 cd ..
 echo "
-Test: atest CtsLibcoreTestCases CtsLibcoreOkHttpTestCases" >> $msgfile
-echo ${new_revision} > BORINGSSL_REVISION
+Test: atest CtsLibcoreTestCases CtsLibcoreOkHttpTestCases boringssl_crypto_test boringssl_ssl_test" >> $msgfile
+if [ ! "$branch" ]; then
+  echo ${new_revision} > BORINGSSL_REVISION
+fi
 
 rm -Rf src/.git
 rm -Rf src/fuzz
 rm -Rf src/third_party/googletest
-rm -Rf linux-aarch64/ linux-arm/ linux-x86/ linux-x86_64/ mac-x86/ mac-x86_64/ win-x86_64/ win-x86/
+rm -Rf apple-aarch64 apple-arm apple-x86 apple-x86_64 ios-aarch64 ios-arm \
+   linux-aarch64 linux-arm linux-ppc64le linux-x86 linux-x86_64 win-aarch64 win-x86 win-x86_64
+
 python src/util/generate_build_files.py android android-cmake bazel eureka
 cp src/LICENSE NOTICE
 
 git add .
 git commit --no-verify -F $msgfile
 rm -f $msgfile
+

@@ -18,6 +18,13 @@ LOCAL_SRC_FILES         += $(test_support_sources)
 LOCAL_LDFLAGS           := -fPIE
 include $(LOCAL_PATH)/build-executable.mk
 
+include $(CLEAR_VARS)
+LOCAL_MODULE            := tool
+LOCAL_STATIC_LIBRARIES  := crypto_static ssl_static
+LOCAL_SRC_FILES         := $(tool_sources)
+LOCAL_LDFLAGS           := -fPIE
+include $(LOCAL_PATH)/build-executable.mk
+
 include $(LOCAL_PATH)/BoringSSL.mk
 $(call import-module,third_party/googletest)
 #$(call import-module,prefab/boringssl)

@@ -23,7 +23,7 @@ include $(BUILD_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE            := ssl_static
-LOCAL_SRC_FILES         := $(libssl_sources)
+LOCAL_SRC_FILES         := $(ssl_sources)
 LOCAL_C_INCLUDES        := $(LOCAL_PATH)/src/include
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/src/include
 LOCAL_STATIC_LIBRARIES  := crypto_static

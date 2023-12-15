@@ -19,7 +19,7 @@ LOCAL_LDFLAGS           := -fPIE
 include $(LOCAL_PATH)/build-executable.mk
 
 include $(CLEAR_VARS)
-LOCAL_MODULE            := tool
+LOCAL_MODULE            := bssl
 LOCAL_STATIC_LIBRARIES  := crypto_static ssl_static
 LOCAL_SRC_FILES         := $(tool_sources)
 LOCAL_LDFLAGS           := -fPIE

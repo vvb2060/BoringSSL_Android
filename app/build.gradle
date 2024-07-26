@@ -5,21 +5,24 @@ plugins {
 }
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion '34.0.0'
-    ndkVersion '26.1.10909125'
-    namespace 'io.github.vvb2060.ndk.boringssl.test'
+    compileSdk = 35
+    buildToolsVersion = '35.0.0'
+    ndkVersion = '27.0.11902837'
+    namespace = 'io.github.vvb2060.ndk.boringssl.test'
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 5
-        versionName 'android-14.0.0_r18'
-        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        minSdk = 21
+        targetSdk = 35
+        versionCode = 6
+        versionName = 'android-14.0.0_r54'
+        testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
         externalNativeBuild {
             ndkBuild {
-                arguments "-j${Runtime.runtime.availableProcessors()}", "APP_LDFLAGS+=-flto"
-                cFlags "-flto"
+                arguments += [ "-j${Runtime.runtime.availableProcessors()}" ]
+                abiFilters += [ "x86", "x86_64", "armeabi-v7a", "arm64-v8a", "riscv64" ]
             }
+        }
+        ndk {
+            debugSymbolLevel = "FULL"
         }
     }
 
@@ -29,6 +32,11 @@ android {
             shrinkResources = true
             signingConfig = signingConfigs.debug
             proguardFiles("proguard-rules.pro")
+            externalNativeBuild {
+                ndkBuild {
+                    arguments += [ "enableLTO=1" ]
+                }
+            }
         }
     }
 
@@ -39,18 +47,26 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
-        buildConfig false
-        prefab true
+        buildConfig = false
+        prefab = true
+    }
+
+    lint {
+        checkReleaseBuilds = false
+    }
+
+    dependenciesInfo {
+        includeInApk = false
     }
 
     packagingOptions {
         jniLibs {
-            useLegacyPackaging false
+            useLegacyPackaging = false
         }
     }
 
@@ -74,6 +90,6 @@ android {
 
 dependencies {
 //    implementation 'io.github.vvb2060.ndk:boringssl:4.0'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
 }

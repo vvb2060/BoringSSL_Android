@@ -4,16 +4,22 @@ plugins {
     id 'signing'
 }
 
+def enableLTO = providers.gradleProperty("enableLTO")
+
 android {
-    compileSdkVersion 34
-    buildToolsVersion '34.0.0'
-    ndkVersion '26.1.10909125'
-    namespace 'io.github.vvb2060.ndk.boringssl'
+    compileSdk = 35
+    buildToolsVersion = '35.0.0'
+    ndkVersion = '27.0.11902837'
+    namespace = 'io.github.vvb2060.ndk.boringssl'
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdk = 21
+        targetSdk = 35
         externalNativeBuild {
-            ndkBuild.arguments "-j${Runtime.runtime.availableProcessors()}"
+            ndkBuild {
+                arguments += [ "-j${Runtime.runtime.availableProcessors()}" ]
+                if (enableLTO.present) arguments += [ "enableLTO=1" ]
+                abiFilters += [ "x86", "x86_64", "armeabi-v7a", "arm64-v8a", "riscv64" ]
+            }
         }
     }
 
@@ -22,13 +28,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     buildFeatures {
-        buildConfig false
-        prefabPublishing true
+        buildConfig = false
+        prefabPublishing = true
     }
 
     prefab {
@@ -53,7 +59,11 @@ publishing {
         mavenJava(MavenPublication) {
             group 'io.github.vvb2060.ndk'
             artifactId 'boringssl'
-            version '4.0'
+            if (enableLTO.present) {
+                version '4.1-lto-ndk27'
+            } else {
+                version '4.1'
+            }
             afterEvaluate {
                 from components.release
             }

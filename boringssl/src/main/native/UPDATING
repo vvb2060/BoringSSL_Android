@@ -36,21 +36,22 @@ git log --format='format:* %s%n%n%b' ${old_revision}..${new_revision} \
 
 cd ..
 echo "
-Test: atest CtsLibcoreTestCases CtsLibcoreOkHttpTestCases boringssl_crypto_test boringssl_ssl_test" >> $msgfile
+Test: treehugger" >> $msgfile
 if [ ! "$branch" ]; then
   echo ${new_revision} > BORINGSSL_REVISION
 fi
 
 rm -Rf src/.git
 rm -Rf src/fuzz
+# Omit the experimental new certificate verifier library for now.
+rm -Rf src/pki
 rm -Rf src/third_party/googletest
 rm -Rf apple-aarch64 apple-arm apple-x86 apple-x86_64 ios-aarch64 ios-arm \
    linux-aarch64 linux-arm linux-ppc64le linux-x86 linux-x86_64 win-aarch64 win-x86 win-x86_64
 
-python src/util/generate_build_files.py android android-cmake bazel eureka
+python3 src/util/generate_build_files.py android android-cmake bazel cmake eureka
 cp src/LICENSE NOTICE
 
 git add .
 git commit --no-verify -F $msgfile
 rm -f $msgfile
-

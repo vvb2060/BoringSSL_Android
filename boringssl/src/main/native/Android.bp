@@ -42,14 +42,14 @@ build = ["sources.bp"]
 
 // Used by libcrypto, libssl, bssl tool, and native tests
 cc_defaults {
-    name: "boringssl_flags",
-    vendor_available: true,
-    product_available: true,
+    // This contains the common options between boringssl_flags and
+    // boringssl_flags_baremetal. Nothing else should include this target
+    // directly.
+    name: "boringssl_flags_common",
 
     cflags: [
         "-fvisibility=hidden",
         "-DBORINGSSL_SHARED_LIBRARY",
-        "-DBORINGSSL_ANDROID_SYSTEM",
         "-DOPENSSL_SMALL",
         "-Werror",
         "-Wno-unused-parameter",
@@ -61,8 +61,28 @@ cc_defaults {
     ],
 
     // Build BoringSSL and its tests against the same STL.
-    sdk_version: "9",
     stl: "libc++_static",
+}
+
+cc_defaults {
+    name: "boringssl_flags",
+    vendor_available: true,
+    product_available: true,
+    cflags: ["-DBORINGSSL_ANDROID_SYSTEM"],
+    defaults: ["boringssl_flags_common"],
+    sdk_version: "9",
+}
+
+cc_defaults {
+    name: "boringssl_flags_baremetal",
+    cflags: [
+        "-DBORINGSSL_NO_STATIC_INITIALIZER",
+        "-DANDROID_BAREMETAL",
+    ],
+    defaults: ["boringssl_flags_common"],
+    apex_available: [
+        "com.android.virt",
+    ],
 }
 
 // Used by libcrypto + libssl
@@ -74,22 +94,18 @@ cc_defaults {
     cflags: ["-DBORINGSSL_IMPLEMENTATION"],
 }
 
-//// libcrypto
+//// libcrypto, but not libcrypto_baremetal. libcrypto_baremetal is a single
+//// target, so there is no need for a libcrypto_defaults_baremetal.
 cc_defaults {
     name: "libcrypto_defaults",
     host_supported: true,
     ramdisk_available: true,
     vendor_ramdisk_available: true,
 
-    // Windows and Macs both have problems with assembly files
     target: {
         windows: {
             enabled: true,
-            cflags: ["-DOPENSSL_NO_ASM"],
             host_ldlibs: ["-lws2_32"],
-        },
-        darwin: {
-            cflags: ["-DOPENSSL_NO_ASM"],
         },
         host: {
             host_ldlibs: ["-lpthread"],
@@ -102,17 +118,14 @@ cc_defaults {
         },
     },
 
-    local_include_dirs: ["src/crypto"],
     stl: "none",
 }
 
 // Boring Crypto Module object file.
-// Any changes here must also be reflected in bcm_object_for_testing below.
-cc_object {
-    name: "bcm_object",
+// Common settings between bcm_object and bcm_object_for_testing.
+cc_defaults {
+    name: "bcm_object_defaults",
     device_supported: true,
-    recovery_available: true,
-    native_bridge_supported: true,
     defaults: [
         "libcrypto_bcm_sources",
         "libcrypto_defaults",
@@ -123,6 +136,7 @@ cc_object {
         address: false,
         hwaddress: false,
         memtag_stack: false,
+        memtag_globals: false,
         fuzzer: false,
     },
     target: {
@@ -150,6 +164,16 @@ cc_object {
             ],
         },
     },
+    min_sdk_version: "29",
+}
+
+cc_object {
+    name: "bcm_object",
+    recovery_available: true,
+    native_bridge_supported: true,
+    defaults: [
+        "bcm_object_defaults",
+    ],
     apex_available: [
         "//apex_available:platform",
         "com.android.adbd",
@@ -161,59 +185,27 @@ cc_object {
         "com.android.compos",
         "com.android.conscrypt",
         "com.android.extservices",
+        "com.android.ondevicepersonalization",
         "com.android.resolv",
         "com.android.virt",
     ],
-    min_sdk_version: "29",
 }
 
 // Version of bcm_object built with BORINGSSL_FIPS_BREAK_TESTS defined.
 // Only for use with the FIPS break-tests.sh script.
-// Must be kept in sync with bcm_object.
 cc_object {
     name: "bcm_object_for_testing",
     visibility: [
         "//external/boringssl",
     ],
-    device_supported: true,
     defaults: [
-        "libcrypto_bcm_sources",
-        "libcrypto_defaults",
-        "boringssl_defaults",
-        "boringssl_flags",
+        "bcm_object_defaults",
     ],
-    sanitize: {
-        address: false,
-        hwaddress: false,
-        fuzzer: false,
-    },
     target: {
         android: {
-            cflags: [
-                "-DBORINGSSL_FIPS",
-                "-DBORINGSSL_FIPS_BREAK_TESTS",
-                "-fPIC",
-                // -fno[data|text]-sections required to ensure a
-                // single text and data section for FIPS integrity check
-                "-fno-data-sections",
-                "-fno-function-sections",
-            ],
-            linker_script: "src/crypto/fipsmodule/fips_shared.lds",
-        },
-        // Temporary hack to let BoringSSL build with a new compiler.
-        // This doesn't enable HWASAN unconditionally, it just causes
-        // BoringSSL's asm code to unconditionally use a HWASAN-compatible
-        // global variable reference so that the non-HWASANified (because of
-        // sanitize: { hwaddress: false } above) code in the BCM can
-        // successfully link against the HWASANified code in the rest of
-        // BoringSSL in HWASAN builds.
-        android_arm64: {
-            asflags: [
-                "-fsanitize=hwaddress",
-            ],
+            cflags: ["-DBORINGSSL_FIPS_BREAK_TESTS"],
         },
     },
-    min_sdk_version: "29",
 }
 
 bootstrap_go_package {
@@ -302,9 +294,11 @@ cc_library {
         "com.android.conscrypt",
         "com.android.extservices",
         "com.android.resolv",
+        "com.android.ondevicepersonalization",
         "com.android.virt",
     ],
     min_sdk_version: "29",
+    afdo: true,
 }
 
 // Version of libcrypto build with BORINGSSL_FIPS_BREAK_TESTS defined
@@ -373,7 +367,7 @@ cc_library_static {
         "//hardware/interfaces/keymaster/4.0/vts/functional",
         "//hardware/interfaces/keymaster/4.1/vts/functional",
         "//packages/modules/adb",
-        "//packages/modules/Bluetooth:__subpackages__",
+        "//packages/modules/AdServices:__subpackages__",
         "//packages/modules/DnsResolver/tests:__subpackages__",
         "//packages/modules/NeuralNetworks:__subpackages__",
         "//system/core/init",
@@ -382,11 +376,14 @@ cc_library_static {
         "//system/core/fs_mgr/libsnapshot",
         "//system/libvintf/test",
         "//system/security/keystore/tests",
+        "//system/security/provisioner",
         "//test/vts-testcase/security/avb",
     ],
     min_sdk_version: "29",
     apex_available: [
         "//apex_available:platform",
+        "com.android.adservices",
+        "com.android.extservices",
         "com.android.neuralnetworks",
     ],
     defaults: [
@@ -404,23 +401,15 @@ cc_library_static {
     defaults: [
         "libcrypto_bcm_sources",
         "libcrypto_sources",
-        "libcrypto_defaults",
         "boringssl_defaults",
-        "boringssl_flags",
-    ],
-    cflags: [
-        "-DBORINGSSL_NO_STATIC_INITIALIZER",
-        "-DOPENSSL_SMALL",
-        "-DOPENSSL_STATIC_ARMCAP",
-        "-D__TRUSTY__",
+        "boringssl_flags_baremetal",
     ],
     visibility: [
-        "//external/avb",
+        "//external/avb:__subpackages__",
         "//external/open-dice",
         "//packages/modules/Virtualization:__subpackages__",
         "//system/security/diced/open_dice",
     ],
-    apex_available: ["com.android.virt"],
 }
 
 // Common defaults for lib*_fuzz_unsafe. These are unsafe and deterministic
@@ -499,9 +488,19 @@ cc_library_static {
     defaults: [
         "libssl_sources",
         "boringssl_defaults",
-        "boringssl_flags",
+        "boringssl_flags_baremetal",
     ],
     static_libs: ["libcrypto_baremetal"],
+}
+
+cc_library_host_static {
+    name: "libssl_static",
+    defaults: [
+        "libssl_sources",
+        "boringssl_defaults",
+        "boringssl_flags",
+    ],
+    static_libs: ["libcrypto_static"],
 }
 
 // Unsafe and deterministic version of libssl. For testing and fuzzing only.
@@ -609,7 +608,7 @@ cc_library_static {
 }
 
 // Test support library
-cc_library_static {
+cc_test_library {
     name: "boringssl_test_support",
     host_supported: true,
     defaults: [
@@ -627,6 +626,8 @@ cc_test {
     name: "boringssl_crypto_test",
     test_config: "CryptoNativeTests.xml",
     host_supported: false,
+    vendor_available: false,
+    product_available: false,
     per_testcase_directory: true,
     compile_multilib: "both",
     multilib: {
@@ -644,7 +645,10 @@ cc_test {
     whole_static_libs: ["boringssl_test_support"],
     // Statically link the library to test to ensure we always pick up the
     // correct version regardless of device linker configuration.
-    static_libs: ["libcrypto_static"],
+    static_libs: [
+        "libcrypto_static",
+        "libgmock_ndk",
+    ],
     target: {
         android: {
             test_suites: ["mts-conscrypt"],
@@ -656,6 +660,8 @@ cc_test {
     name: "boringssl_ssl_test",
     test_config: "SslNativeTests.xml",
     host_supported: false,
+    vendor_available: false,
+    product_available: false,
     per_testcase_directory: true,
     compile_multilib: "both",
     multilib: {
@@ -675,6 +681,7 @@ cc_test {
     // correct version regardless of device linker configuration.
     static_libs: [
         "libcrypto_static",
+        "libgmock_ndk",
         "libssl",
     ],
     target: {
@@ -688,6 +695,15 @@ cc_test {
 cc_binary {
     name: "test_fips",
     host_supported: false,
+    compile_multilib: "both",
+    multilib: {
+        lib32: {
+            suffix: "32",
+        },
+        lib64: {
+            suffix: "",
+        },
+    },
     defaults: [
         "boringssl_flags",
     ],
@@ -709,25 +725,13 @@ libbssl_sys_raw_flags = [
     "--no-derive-default",
     "--enable-function-attribute-detection",
     "--use-core",
-    "--size_t-is-usize",
     "--default-macro-constant-type=signed",
     "--rustified-enum=point_conversion_form_t",
-    "--allowlist-file=.*/include/openssl/.*\\.h",
-    "--allowlist-file=.*/rust_wrapper\\.h",
-    // These are not BoringSSL symbols, they are from glibc
-    // and are not relevant to the build besides throwing warnings
-    // about their 'long double' (aka u128) not being FFI safe.
-    // We block those functions so that the build doesn't
-    // spam warnings.
-    //
-    // https://github.com/rust-lang/rust-bindgen/issues/1549 describes the current problem
-    // and other folks' solutions.
-    "--blocklist-function=strtold",
-    "--blocklist-function=qecvt",
-    "--blocklist-function=qecvt_r",
-    "--blocklist-function=qgcvt",
-    "--blocklist-function=qfcvt",
-    "--blocklist-function=qfcvt_r",
+    // These regexes use [[:punct:]] instead of / to handle Windows file paths.
+    // Ideally we would write [/\\], but escaping rules are complex, and often
+    // ill-defined, in some build systems, so align on [[:punct:]].
+    "--allowlist-file=.*[[:punct:]]include[[:punct:]]openssl[[:punct:]].*\\.h",
+    "--allowlist-file=.*[[:punct:]]rust_wrapper\\.h",
 ]
 
 // Rust bindings
@@ -763,6 +767,9 @@ rust_bindgen {
         "libcrypto_baremetal",
         "libssl_baremetal",
     ],
+    apex_available: [
+        "com.android.virt",
+    ],
 }
 
 // Encapsulate the bindgen-generated layout tests as a test target.
@@ -797,7 +804,7 @@ cc_library_static {
 
 cc_library_static {
     name: "libbssl_rust_support_baremetal",
-    defaults: ["boringssl_flags"],
+    defaults: ["boringssl_flags_baremetal"],
     srcs: ["src/rust/bssl-sys/rust_wrapper.c"],
     static_libs: [
         "libcrypto_baremetal",
@@ -805,17 +812,28 @@ cc_library_static {
     ],
 }
 
-// Replace the upstream CMake placeholder with a re-export of all of the local bindgen output.
-gensrcs {
-    name: "libbssl_sys_src",
-    srcs: ["src/rust/bssl-sys/src/lib.rs"],
-    cmd: "sed 's@^.{INCLUDES}@pub use bssl_sys_raw::*;@' $(in) > $(out)",
+cc_library_host_static {
+    name: "libbssl_rust_support_static",
+    defaults: ["boringssl_flags"],
+    srcs: ["src/rust/bssl-sys/rust_wrapper.c"],
+    whole_static_libs: [
+        "libcrypto_static",
+        "libssl_static",
+    ],
 }
 
-rust_library {
-    name: "libbssl_ffi",
+// Replace the upstream CMake placeholder with a re-export of all of the local bindgen output.
+genrule {
+    name: "libbssl_sys_src",
+    srcs: ["src/rust/bssl-sys/src/lib.rs"],
+    out: ["lib.rs"],
+    cmd: "sed 's@^include!(env!(\"BINDGEN_RS_FILE\"));@pub use bssl_sys_raw::*;@' $(in) > $(out)",
+}
+
+rust_defaults {
+    name: "libbssl_sys_defaults",
     host_supported: true,
-    crate_name: "bssl_ffi",
+    crate_name: "bssl_sys",
     visibility: [
         "//external/rust/crates/openssl",
         "//system/keymint/boringssl",
@@ -828,6 +846,11 @@ rust_library {
     // Since libbssl_sys_raw is not publicly visible, we can't accidentally
     // force a double-link by linking statically, so do so.
     rlibs: ["libbssl_sys_raw"],
+}
+
+rust_library {
+    name: "libbssl_sys",
+    defaults: ["libbssl_sys_defaults"],
     whole_static_libs: [
         "libbssl_rust_support",
     ],
@@ -837,17 +860,26 @@ rust_library {
     ],
 }
 
-gensrcs {
+rust_library_host_rlib {
+    name: "libbssl_sys_static",
+    defaults: ["libbssl_sys_defaults"],
+    whole_static_libs: [
+        "libbssl_rust_support_static",
+    ],
+}
+
+genrule {
     name: "libbssl_sys_src_nostd",
     srcs: [":libbssl_sys_src"],
+    out: ["lib.rs"],
     cmd: "(echo '#![no_std]' && cat $(in)) > $(out)",
 }
 
 rust_library_rlib {
-    name: "libbssl_ffi_nostd",
-    crate_name: "bssl_ffi",
+    name: "libbssl_sys_nostd",
+    crate_name: "bssl_sys",
     visibility: [
-        "//packages/modules/Virtualization/pvmfw",
+        "//packages/modules/Virtualization:__subpackages__",
     ],
     srcs: [":libbssl_sys_src_nostd"],
     rlibs: ["libbssl_sys_raw_nostd"],
@@ -860,4 +892,36 @@ rust_library_rlib {
     whole_static_libs: [
         "libbssl_rust_support_baremetal",
     ],
+}
+
+// High-level Rust crate `bssl-crypto`
+
+rust_defaults {
+    name: "libbssl_crypto_defaults",
+    crate_name: "bssl_crypto",
+    srcs: ["src/rust/bssl-crypto/src/lib.rs"],
+    rustlibs: ["libbssl_sys"],
+}
+
+rust_library {
+    name: "libbssl_crypto",
+    defaults: ["libbssl_crypto_defaults"],
+    host_supported: true,
+    apex_available: [
+        "//apex_available:platform",
+        "com.android.virt",
+    ],
+    visibility: [
+        "//external/rust/beto-rust/nearby",
+    ],
+    vendor_available: true,
+    product_available: true,
+}
+
+rust_test {
+    name: "libbssl_crypto_test",
+    defaults: ["libbssl_crypto_defaults"],
+    crate_name: "bssl_crypto_test",
+    test_suites: ["general-tests"],
+    auto_gen_config: true,
 }

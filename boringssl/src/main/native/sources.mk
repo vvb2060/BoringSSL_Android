@@ -47,6 +47,7 @@ crypto_sources := \
   src/crypto/bio/bio.c\
   src/crypto/bio/bio_mem.c\
   src/crypto/bio/connect.c\
+  src/crypto/bio/errno.c\
   src/crypto/bio/fd.c\
   src/crypto/bio/file.c\
   src/crypto/bio/hexdump.c\
@@ -77,16 +78,17 @@ crypto_sources := \
   src/crypto/cipher_extra/tls_cbc.c\
   src/crypto/conf/conf.c\
   src/crypto/cpu_aarch64_apple.c\
-  src/crypto/cpu_aarch64_freebsd.c\
   src/crypto/cpu_aarch64_fuchsia.c\
   src/crypto/cpu_aarch64_linux.c\
+  src/crypto/cpu_aarch64_openbsd.c\
+  src/crypto/cpu_aarch64_sysreg.c\
   src/crypto/cpu_aarch64_win.c\
-  src/crypto/cpu_arm.c\
   src/crypto/cpu_arm_freebsd.c\
   src/crypto/cpu_arm_linux.c\
   src/crypto/cpu_intel.c\
   src/crypto/crypto.c\
   src/crypto/curve25519/curve25519.c\
+  src/crypto/curve25519/curve25519_64_adx.c\
   src/crypto/curve25519/spake25519.c\
   src/crypto/des/des.c\
   src/crypto/dh_extra/dh_asn1.c\
@@ -123,7 +125,7 @@ crypto_sources := \
   src/crypto/fipsmodule/fips_shared_support.c\
   src/crypto/hpke/hpke.c\
   src/crypto/hrss/hrss.c\
-  src/crypto/kyber/keccak.c\
+  src/crypto/keccak/keccak.c\
   src/crypto/kyber/kyber.c\
   src/crypto/lhash/lhash.c\
   src/crypto/mem.c\
@@ -148,17 +150,25 @@ crypto_sources := \
   src/crypto/pool/pool.c\
   src/crypto/rand_extra/deterministic.c\
   src/crypto/rand_extra/forkunsafe.c\
-  src/crypto/rand_extra/fuchsia.c\
+  src/crypto/rand_extra/getentropy.c\
+  src/crypto/rand_extra/ios.c\
   src/crypto/rand_extra/passive.c\
   src/crypto/rand_extra/rand_extra.c\
+  src/crypto/rand_extra/trusty.c\
   src/crypto/rand_extra/windows.c\
   src/crypto/rc4/rc4.c\
-  src/crypto/refcount_c11.c\
-  src/crypto/refcount_lock.c\
+  src/crypto/refcount.c\
   src/crypto/rsa_extra/rsa_asn1.c\
   src/crypto/rsa_extra/rsa_crypt.c\
   src/crypto/rsa_extra/rsa_print.c\
   src/crypto/siphash/siphash.c\
+  src/crypto/spx/address.c\
+  src/crypto/spx/fors.c\
+  src/crypto/spx/merkle.c\
+  src/crypto/spx/spx.c\
+  src/crypto/spx/spx_util.c\
+  src/crypto/spx/thash.c\
+  src/crypto/spx/wots.c\
   src/crypto/stack/stack.c\
   src/crypto/thread.c\
   src/crypto/thread_none.c\
@@ -182,6 +192,29 @@ crypto_sources := \
   src/crypto/x509/t_req.c\
   src/crypto/x509/t_x509.c\
   src/crypto/x509/t_x509a.c\
+  src/crypto/x509/v3_akey.c\
+  src/crypto/x509/v3_akeya.c\
+  src/crypto/x509/v3_alt.c\
+  src/crypto/x509/v3_bcons.c\
+  src/crypto/x509/v3_bitst.c\
+  src/crypto/x509/v3_conf.c\
+  src/crypto/x509/v3_cpols.c\
+  src/crypto/x509/v3_crld.c\
+  src/crypto/x509/v3_enum.c\
+  src/crypto/x509/v3_extku.c\
+  src/crypto/x509/v3_genn.c\
+  src/crypto/x509/v3_ia5.c\
+  src/crypto/x509/v3_info.c\
+  src/crypto/x509/v3_int.c\
+  src/crypto/x509/v3_lib.c\
+  src/crypto/x509/v3_ncons.c\
+  src/crypto/x509/v3_ocsp.c\
+  src/crypto/x509/v3_pcons.c\
+  src/crypto/x509/v3_pmaps.c\
+  src/crypto/x509/v3_prn.c\
+  src/crypto/x509/v3_purp.c\
+  src/crypto/x509/v3_skey.c\
+  src/crypto/x509/v3_utl.c\
   src/crypto/x509/x509.c\
   src/crypto/x509/x509_att.c\
   src/crypto/x509/x509_cmp.c\
@@ -206,9 +239,7 @@ crypto_sources := \
   src/crypto/x509/x_attrib.c\
   src/crypto/x509/x_crl.c\
   src/crypto/x509/x_exten.c\
-  src/crypto/x509/x_info.c\
   src/crypto/x509/x_name.c\
-  src/crypto/x509/x_pkey.c\
   src/crypto/x509/x_pubkey.c\
   src/crypto/x509/x_req.c\
   src/crypto/x509/x_sig.c\
@@ -216,29 +247,180 @@ crypto_sources := \
   src/crypto/x509/x_val.c\
   src/crypto/x509/x_x509.c\
   src/crypto/x509/x_x509a.c\
-  src/crypto/x509v3/v3_akey.c\
-  src/crypto/x509v3/v3_akeya.c\
-  src/crypto/x509v3/v3_alt.c\
-  src/crypto/x509v3/v3_bcons.c\
-  src/crypto/x509v3/v3_bitst.c\
-  src/crypto/x509v3/v3_conf.c\
-  src/crypto/x509v3/v3_cpols.c\
-  src/crypto/x509v3/v3_crld.c\
-  src/crypto/x509v3/v3_enum.c\
-  src/crypto/x509v3/v3_extku.c\
-  src/crypto/x509v3/v3_genn.c\
-  src/crypto/x509v3/v3_ia5.c\
-  src/crypto/x509v3/v3_info.c\
-  src/crypto/x509v3/v3_int.c\
-  src/crypto/x509v3/v3_lib.c\
-  src/crypto/x509v3/v3_ncons.c\
-  src/crypto/x509v3/v3_ocsp.c\
-  src/crypto/x509v3/v3_pcons.c\
-  src/crypto/x509v3/v3_pmaps.c\
-  src/crypto/x509v3/v3_prn.c\
-  src/crypto/x509v3/v3_purp.c\
-  src/crypto/x509v3/v3_skey.c\
-  src/crypto/x509v3/v3_utl.c\
+
+crypto_sources_asm := \
+  apple-aarch64/crypto/chacha/chacha-armv8-apple.S\
+  apple-aarch64/crypto/cipher_extra/chacha20_poly1305_armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/aesv8-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/aesv8-gcm-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/armv8-mont-apple.S\
+  apple-aarch64/crypto/fipsmodule/bn-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/ghash-neon-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/ghashv8-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/p256-armv8-asm-apple.S\
+  apple-aarch64/crypto/fipsmodule/p256_beeu-armv8-asm-apple.S\
+  apple-aarch64/crypto/fipsmodule/sha1-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/sha256-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/sha512-armv8-apple.S\
+  apple-aarch64/crypto/fipsmodule/vpaes-armv8-apple.S\
+  apple-aarch64/crypto/test/trampoline-armv8-apple.S\
+  apple-arm/crypto/chacha/chacha-armv4-apple.S\
+  apple-arm/crypto/fipsmodule/aesv8-armv7-apple.S\
+  apple-arm/crypto/fipsmodule/armv4-mont-apple.S\
+  apple-arm/crypto/fipsmodule/bsaes-armv7-apple.S\
+  apple-arm/crypto/fipsmodule/ghash-armv4-apple.S\
+  apple-arm/crypto/fipsmodule/ghashv8-armv7-apple.S\
+  apple-arm/crypto/fipsmodule/sha1-armv4-large-apple.S\
+  apple-arm/crypto/fipsmodule/sha256-armv4-apple.S\
+  apple-arm/crypto/fipsmodule/sha512-armv4-apple.S\
+  apple-arm/crypto/fipsmodule/vpaes-armv7-apple.S\
+  apple-arm/crypto/test/trampoline-armv4-apple.S\
+  apple-x86/crypto/chacha/chacha-x86-apple.S\
+  apple-x86/crypto/fipsmodule/aesni-x86-apple.S\
+  apple-x86/crypto/fipsmodule/bn-586-apple.S\
+  apple-x86/crypto/fipsmodule/co-586-apple.S\
+  apple-x86/crypto/fipsmodule/ghash-ssse3-x86-apple.S\
+  apple-x86/crypto/fipsmodule/ghash-x86-apple.S\
+  apple-x86/crypto/fipsmodule/md5-586-apple.S\
+  apple-x86/crypto/fipsmodule/sha1-586-apple.S\
+  apple-x86/crypto/fipsmodule/sha256-586-apple.S\
+  apple-x86/crypto/fipsmodule/sha512-586-apple.S\
+  apple-x86/crypto/fipsmodule/vpaes-x86-apple.S\
+  apple-x86/crypto/fipsmodule/x86-mont-apple.S\
+  apple-x86/crypto/test/trampoline-x86-apple.S\
+  apple-x86_64/crypto/chacha/chacha-x86_64-apple.S\
+  apple-x86_64/crypto/cipher_extra/aes128gcmsiv-x86_64-apple.S\
+  apple-x86_64/crypto/cipher_extra/chacha20_poly1305_x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/aesni-gcm-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/aesni-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/ghash-ssse3-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/ghash-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/md5-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/p256-x86_64-asm-apple.S\
+  apple-x86_64/crypto/fipsmodule/p256_beeu-x86_64-asm-apple.S\
+  apple-x86_64/crypto/fipsmodule/rdrand-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/rsaz-avx2-apple.S\
+  apple-x86_64/crypto/fipsmodule/sha1-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/sha256-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/sha512-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/vpaes-x86_64-apple.S\
+  apple-x86_64/crypto/fipsmodule/x86_64-mont-apple.S\
+  apple-x86_64/crypto/fipsmodule/x86_64-mont5-apple.S\
+  apple-x86_64/crypto/test/trampoline-x86_64-apple.S\
+  linux-aarch64/crypto/chacha/chacha-armv8-linux.S\
+  linux-aarch64/crypto/cipher_extra/chacha20_poly1305_armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/aesv8-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/aesv8-gcm-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/armv8-mont-linux.S\
+  linux-aarch64/crypto/fipsmodule/bn-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/ghash-neon-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/ghashv8-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/p256-armv8-asm-linux.S\
+  linux-aarch64/crypto/fipsmodule/p256_beeu-armv8-asm-linux.S\
+  linux-aarch64/crypto/fipsmodule/sha1-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/sha256-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/sha512-armv8-linux.S\
+  linux-aarch64/crypto/fipsmodule/vpaes-armv8-linux.S\
+  linux-aarch64/crypto/test/trampoline-armv8-linux.S\
+  linux-arm/crypto/chacha/chacha-armv4-linux.S\
+  linux-arm/crypto/fipsmodule/aesv8-armv7-linux.S\
+  linux-arm/crypto/fipsmodule/armv4-mont-linux.S\
+  linux-arm/crypto/fipsmodule/bsaes-armv7-linux.S\
+  linux-arm/crypto/fipsmodule/ghash-armv4-linux.S\
+  linux-arm/crypto/fipsmodule/ghashv8-armv7-linux.S\
+  linux-arm/crypto/fipsmodule/sha1-armv4-large-linux.S\
+  linux-arm/crypto/fipsmodule/sha256-armv4-linux.S\
+  linux-arm/crypto/fipsmodule/sha512-armv4-linux.S\
+  linux-arm/crypto/fipsmodule/vpaes-armv7-linux.S\
+  linux-arm/crypto/test/trampoline-armv4-linux.S\
+  linux-x86/crypto/chacha/chacha-x86-linux.S\
+  linux-x86/crypto/fipsmodule/aesni-x86-linux.S\
+  linux-x86/crypto/fipsmodule/bn-586-linux.S\
+  linux-x86/crypto/fipsmodule/co-586-linux.S\
+  linux-x86/crypto/fipsmodule/ghash-ssse3-x86-linux.S\
+  linux-x86/crypto/fipsmodule/ghash-x86-linux.S\
+  linux-x86/crypto/fipsmodule/md5-586-linux.S\
+  linux-x86/crypto/fipsmodule/sha1-586-linux.S\
+  linux-x86/crypto/fipsmodule/sha256-586-linux.S\
+  linux-x86/crypto/fipsmodule/sha512-586-linux.S\
+  linux-x86/crypto/fipsmodule/vpaes-x86-linux.S\
+  linux-x86/crypto/fipsmodule/x86-mont-linux.S\
+  linux-x86/crypto/test/trampoline-x86-linux.S\
+  linux-x86_64/crypto/chacha/chacha-x86_64-linux.S\
+  linux-x86_64/crypto/cipher_extra/aes128gcmsiv-x86_64-linux.S\
+  linux-x86_64/crypto/cipher_extra/chacha20_poly1305_x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/aesni-gcm-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/aesni-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/ghash-ssse3-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/ghash-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/md5-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/p256-x86_64-asm-linux.S\
+  linux-x86_64/crypto/fipsmodule/p256_beeu-x86_64-asm-linux.S\
+  linux-x86_64/crypto/fipsmodule/rdrand-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/rsaz-avx2-linux.S\
+  linux-x86_64/crypto/fipsmodule/sha1-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/sha256-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/sha512-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/vpaes-x86_64-linux.S\
+  linux-x86_64/crypto/fipsmodule/x86_64-mont-linux.S\
+  linux-x86_64/crypto/fipsmodule/x86_64-mont5-linux.S\
+  linux-x86_64/crypto/test/trampoline-x86_64-linux.S\
+  src/crypto/curve25519/asm/x25519-asm-arm.S\
+  src/crypto/hrss/asm/poly_rq_mul.S\
+  src/crypto/poly1305/poly1305_arm_asm.S\
+  src/third_party/fiat/asm/fiat_curve25519_adx_mul.S\
+  src/third_party/fiat/asm/fiat_curve25519_adx_square.S\
+  src/third_party/fiat/asm/fiat_p256_adx_mul.S\
+  src/third_party/fiat/asm/fiat_p256_adx_sqr.S\
+  win-aarch64/crypto/chacha/chacha-armv8-win.S\
+  win-aarch64/crypto/cipher_extra/chacha20_poly1305_armv8-win.S\
+  win-aarch64/crypto/fipsmodule/aesv8-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/aesv8-gcm-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/armv8-mont-win.S\
+  win-aarch64/crypto/fipsmodule/bn-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/ghash-neon-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/ghashv8-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/p256-armv8-asm-win.S\
+  win-aarch64/crypto/fipsmodule/p256_beeu-armv8-asm-win.S\
+  win-aarch64/crypto/fipsmodule/sha1-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/sha256-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/sha512-armv8-win.S\
+  win-aarch64/crypto/fipsmodule/vpaes-armv8-win.S\
+  win-aarch64/crypto/test/trampoline-armv8-win.S\
+
+crypto_sources_nasm := \
+  win-x86/crypto/chacha/chacha-x86-win.asm\
+  win-x86/crypto/fipsmodule/aesni-x86-win.asm\
+  win-x86/crypto/fipsmodule/bn-586-win.asm\
+  win-x86/crypto/fipsmodule/co-586-win.asm\
+  win-x86/crypto/fipsmodule/ghash-ssse3-x86-win.asm\
+  win-x86/crypto/fipsmodule/ghash-x86-win.asm\
+  win-x86/crypto/fipsmodule/md5-586-win.asm\
+  win-x86/crypto/fipsmodule/sha1-586-win.asm\
+  win-x86/crypto/fipsmodule/sha256-586-win.asm\
+  win-x86/crypto/fipsmodule/sha512-586-win.asm\
+  win-x86/crypto/fipsmodule/vpaes-x86-win.asm\
+  win-x86/crypto/fipsmodule/x86-mont-win.asm\
+  win-x86/crypto/test/trampoline-x86-win.asm\
+  win-x86_64/crypto/chacha/chacha-x86_64-win.asm\
+  win-x86_64/crypto/cipher_extra/aes128gcmsiv-x86_64-win.asm\
+  win-x86_64/crypto/cipher_extra/chacha20_poly1305_x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/aesni-gcm-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/aesni-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/ghash-ssse3-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/ghash-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/md5-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/p256-x86_64-asm-win.asm\
+  win-x86_64/crypto/fipsmodule/p256_beeu-x86_64-asm-win.asm\
+  win-x86_64/crypto/fipsmodule/rdrand-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/rsaz-avx2-win.asm\
+  win-x86_64/crypto/fipsmodule/sha1-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/sha256-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/sha512-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/vpaes-x86_64-win.asm\
+  win-x86_64/crypto/fipsmodule/x86_64-mont-win.asm\
+  win-x86_64/crypto/fipsmodule/x86_64-mont5-win.asm\
+  win-x86_64/crypto/test/trampoline-x86_64-win.asm\
 
 ssl_sources := \
   src/ssl/bio_ssl.cc\
@@ -298,74 +480,11 @@ tool_sources := \
   src/tool/tool.cc\
   src/tool/transport_common.cc\
 
-linux_aarch64_sources := \
-  linux-aarch64/crypto/chacha/chacha-armv8-linux.S\
-  linux-aarch64/crypto/cipher_extra/chacha20_poly1305_armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/aesv8-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/aesv8-gcm-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/armv8-mont-linux.S\
-  linux-aarch64/crypto/fipsmodule/bn-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/ghash-neon-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/ghashv8-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/p256-armv8-asm-linux.S\
-  linux-aarch64/crypto/fipsmodule/p256_beeu-armv8-asm-linux.S\
-  linux-aarch64/crypto/fipsmodule/sha1-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/sha256-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/sha512-armv8-linux.S\
-  linux-aarch64/crypto/fipsmodule/vpaes-armv8-linux.S\
-  linux-aarch64/crypto/test/trampoline-armv8-linux.S\
-
-linux_arm_sources := \
-  linux-arm/crypto/chacha/chacha-armv4-linux.S\
-  linux-arm/crypto/fipsmodule/aesv8-armv7-linux.S\
-  linux-arm/crypto/fipsmodule/armv4-mont-linux.S\
-  linux-arm/crypto/fipsmodule/bsaes-armv7-linux.S\
-  linux-arm/crypto/fipsmodule/ghash-armv4-linux.S\
-  linux-arm/crypto/fipsmodule/ghashv8-armv7-linux.S\
-  linux-arm/crypto/fipsmodule/sha1-armv4-large-linux.S\
-  linux-arm/crypto/fipsmodule/sha256-armv4-linux.S\
-  linux-arm/crypto/fipsmodule/sha512-armv4-linux.S\
-  linux-arm/crypto/fipsmodule/vpaes-armv7-linux.S\
-  linux-arm/crypto/test/trampoline-armv4-linux.S\
-  src/crypto/curve25519/asm/x25519-asm-arm.S\
-  src/crypto/poly1305/poly1305_arm_asm.S\
-
-linux_x86_sources := \
-  linux-x86/crypto/chacha/chacha-x86-linux.S\
-  linux-x86/crypto/fipsmodule/aesni-x86-linux.S\
-  linux-x86/crypto/fipsmodule/bn-586-linux.S\
-  linux-x86/crypto/fipsmodule/co-586-linux.S\
-  linux-x86/crypto/fipsmodule/ghash-ssse3-x86-linux.S\
-  linux-x86/crypto/fipsmodule/ghash-x86-linux.S\
-  linux-x86/crypto/fipsmodule/md5-586-linux.S\
-  linux-x86/crypto/fipsmodule/sha1-586-linux.S\
-  linux-x86/crypto/fipsmodule/sha256-586-linux.S\
-  linux-x86/crypto/fipsmodule/sha512-586-linux.S\
-  linux-x86/crypto/fipsmodule/vpaes-x86-linux.S\
-  linux-x86/crypto/fipsmodule/x86-mont-linux.S\
-  linux-x86/crypto/test/trampoline-x86-linux.S\
-
-linux_x86_64_sources := \
-  linux-x86_64/crypto/chacha/chacha-x86_64-linux.S\
-  linux-x86_64/crypto/cipher_extra/aes128gcmsiv-x86_64-linux.S\
-  linux-x86_64/crypto/cipher_extra/chacha20_poly1305_x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/aesni-gcm-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/aesni-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/ghash-ssse3-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/ghash-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/md5-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/p256-x86_64-asm-linux.S\
-  linux-x86_64/crypto/fipsmodule/p256_beeu-x86_64-asm-linux.S\
-  linux-x86_64/crypto/fipsmodule/rdrand-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/rsaz-avx2-linux.S\
-  linux-x86_64/crypto/fipsmodule/sha1-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/sha256-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/sha512-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/vpaes-x86_64-linux.S\
-  linux-x86_64/crypto/fipsmodule/x86_64-mont-linux.S\
-  linux-x86_64/crypto/fipsmodule/x86_64-mont5-linux.S\
-  linux-x86_64/crypto/test/trampoline-x86_64-linux.S\
-  src/crypto/hrss/asm/poly_rq_mul.S\
+test_support_sources := \
+  src/crypto/test/abi_test.cc\
+  src/crypto/test/file_test.cc\
+  src/crypto/test/test_util.cc\
+  src/crypto/test/wycheproof_util.cc\
 
 crypto_test_sources := \
   crypto_test_data.cc\
@@ -401,6 +520,7 @@ crypto_test_sources := \
   src/crypto/fipsmodule/cmac/cmac_test.cc\
   src/crypto/fipsmodule/ec/ec_test.cc\
   src/crypto/fipsmodule/ec/p256-nistz_test.cc\
+  src/crypto/fipsmodule/ec/p256_test.cc\
   src/crypto/fipsmodule/ecdsa/ecdsa_test.cc\
   src/crypto/fipsmodule/hkdf/hkdf_test.cc\
   src/crypto/fipsmodule/md5/md5_test.cc\
@@ -413,6 +533,7 @@ crypto_test_sources := \
   src/crypto/hpke/hpke_test.cc\
   src/crypto/hrss/hrss_test.cc\
   src/crypto/impl_dispatch_test.cc\
+  src/crypto/keccak/keccak_test.cc\
   src/crypto/kyber/kyber_test.cc\
   src/crypto/lhash/lhash_test.cc\
   src/crypto/obj/obj_test.cc\
@@ -422,29 +543,24 @@ crypto_test_sources := \
   src/crypto/pkcs8/pkcs8_test.cc\
   src/crypto/poly1305/poly1305_test.cc\
   src/crypto/pool/pool_test.cc\
+  src/crypto/rand_extra/getentropy_test.cc\
   src/crypto/rand_extra/rand_test.cc\
   src/crypto/refcount_test.cc\
   src/crypto/rsa_extra/rsa_test.cc\
   src/crypto/self_test.cc\
   src/crypto/siphash/siphash_test.cc\
+  src/crypto/spx/spx_test.cc\
   src/crypto/stack/stack_test.cc\
-  src/crypto/test/abi_test.cc\
   src/crypto/test/file_test_gtest.cc\
   src/crypto/test/gtest_main.cc\
   src/crypto/thread_test.cc\
   src/crypto/trust_token/trust_token_test.cc\
+  src/crypto/x509/tab_test.cc\
   src/crypto/x509/x509_test.cc\
   src/crypto/x509/x509_time_test.cc\
-  src/crypto/x509v3/tab_test.cc
 
 ssl_test_sources := \
-  src/crypto/test/abi_test.cc\
   src/crypto/test/gtest_main.cc\
   src/ssl/span_test.cc\
   src/ssl/ssl_c_test.c\
-  src/ssl/ssl_test.cc
-
-test_support_sources := \
-  src/crypto/test/file_test.cc\
-  src/crypto/test/test_util.cc\
-  src/crypto/test/wycheproof_util.cc
+  src/ssl/ssl_test.cc\

@@ -1,0 +1,2 @@
+on early-init && property:ro.product.cpu.abilist64=*
+    exec_start boringssl_self_test64_vendor

@@ -1,17 +1,9 @@
 // This file is generated from a similarly-named Perl script in the BoringSSL
 // source tree. Do not edit by hand.
 
-#if !defined(__has_feature)
-#define __has_feature(x) 0
-#endif
-#if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
-#define OPENSSL_NO_ASM
-#endif
+#include <openssl/asm_base.h>
 
-#if !defined(OPENSSL_NO_ASM) && defined(__AARCH64EL__) && defined(_WIN32)
-#if defined(BORINGSSL_PREFIX)
-#include <boringssl_prefix_symbols_asm.h>
-#endif
+#if !defined(OPENSSL_NO_ASM) && defined(OPENSSL_AARCH64) && defined(_WIN32)
 // Copyright 2014-2020 The OpenSSL Project Authors. All Rights Reserved.
 //
 // Licensed under the OpenSSL license (the "License").  You may not use
@@ -58,26 +50,13 @@
 
 .text
 
+.globl	sha512_block_data_order_nohw
 
-
-.globl	sha512_block_data_order
-
-.def sha512_block_data_order
+.def sha512_block_data_order_nohw
    .type 32
 .endef
 .align	6
-sha512_block_data_order:
-	AARCH64_VALID_CALL_TARGET
-#ifndef	__KERNEL__
-#if __has_feature(hwaddress_sanitizer) && __clang_major__ >= 10
-	adrp	x16,:pg_hi21_nc:OPENSSL_armcap_P
-#else
-	adrp	x16,OPENSSL_armcap_P
-#endif
-	ldr	w16,[x16,:lo12:OPENSSL_armcap_P]
-	tst	w16,#ARMV8_SHA512
-	b.ne	Lv8_entry
-#endif
+sha512_block_data_order_nohw:
 	AARCH64_SIGN_LINK_REGISTER
 	stp	x29,x30,[sp,#-128]!
 	add	x29,sp,#0
@@ -1094,12 +1073,15 @@ LK512:
 .align	2
 .text
 #ifndef	__KERNEL__
-.def sha512_block_armv8
+.globl	sha512_block_data_order_hw
+
+.def sha512_block_data_order_hw
    .type 32
 .endef
 .align	6
-sha512_block_armv8:
-Lv8_entry:
+sha512_block_data_order_hw:
+	// Armv8.3-A PAuth: even though x30 is pushed to stack it is not popped later.
+	AARCH64_VALID_CALL_TARGET
 	stp	x29,x30,[sp,#-16]!
 	add	x29,sp,#0
 
@@ -1615,8 +1597,4 @@ Loop_hw:
 	ret
 
 #endif
-#endif  // !OPENSSL_NO_ASM && defined(__AARCH64EL__) && defined(_WIN32)
-#if defined(__ELF__)
-// See https://www.airs.com/blog/archives/518.
-.section .note.GNU-stack,"",%progbits
-#endif
+#endif  // !OPENSSL_NO_ASM && defined(OPENSSL_AARCH64) && defined(_WIN32)

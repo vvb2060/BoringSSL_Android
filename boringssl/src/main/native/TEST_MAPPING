@@ -1,6 +1,23 @@
 {
   "presubmit": [
     {
+      "name": "CtsLibcoreTestCases",
+      "options": [
+        {
+          "include-filter": "com.android.org.conscrypt"
+        },
+        {
+          "include-filter": "libcore.java.security"
+        },
+        {
+          "include-filter": "tests.security"
+        }
+      ]
+    },
+    {
+      "name": "CtsLibcoreOkHttpTestCases"
+    },
+    {
       "name": "libbssl_sys_raw_test"
     }
   ]

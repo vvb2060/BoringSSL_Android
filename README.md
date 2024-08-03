@@ -9,7 +9,9 @@ This library is based on the [boringssl AOSP repo](https://android.googlesource.
 Gradle:
 
 ```gradle
-implementation 'io.github.vvb2060.ndk:boringssl:4.0'
+implementation("io.github.vvb2060.ndk:boringssl:4.1")
+// or LTO version (~35MiB), it does not strip any debug info
+implementation("io.github.vvb2060.ndk:boringssl:4.1-lto-ndk27")
 ```
 
 This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.1+):
@@ -19,7 +21,7 @@ android {
     ...
     buildFeatures {
         ...
-        prefab true
+        prefab = true
     }
 }
 ```
@@ -60,21 +62,6 @@ find_package(boringssl REQUIRED CONFIG)
 target_link_libraries(app boringssl::crypto_static)
 ```
 
-### git submodule
-
-If you don't want to use prefab and want to compile entirely from source code,
-for example to enable LTO, you can import this project as a git submodule.
-
-```makefile
-include $(CLEAR_VARS)
-LOCAL_MODULE           := app
-LOCAL_SRC_FILES        := app.cpp
-LOCAL_STATIC_LIBRARIES := ssl_static
-include $(BUILD_SHARED_LIBRARY)
-
-include [submodule path]/boringssl/src/main/native/BoringSSL.mk
-```
-
 ## Changelog
 
 * 1.0 [android-r-beta-3](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-r-beta-3) [2fb729d4f36beaf263ad85e24a790b571652679c](https://github.com/google/boringssl/tree/2fb729d4f36beaf263ad85e24a790b571652679c)
@@ -82,3 +69,4 @@ include [submodule path]/boringssl/src/main/native/BoringSSL.mk
 * 3.0 [android-t-preview-2](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-t-preview-2) [345c86b1cfcc478a71a9a71f0206893fd16ae912](https://github.com/google/boringssl/tree/345c86b1cfcc478a71a9a71f0206893fd16ae912)
 * 3.1 [android-13.0.0_r18](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-13.0.0_r18) [base 1530333b25589ee4d4d52b10e78ee55dd82f6dcd](https://github.com/google/boringssl/tree/1530333b25589ee4d4d52b10e78ee55dd82f6dcd) [patch adeb743478cf1894e0148e46044dc51f091a312e](https://github.com/google/boringssl/tree/adeb743478cf1894e0148e46044dc51f091a312e)
 * 4.0 [android-14.0.0_r18](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-14.0.0_r18) [base 32b51305debe43e38e7bf2c2b13c4ebf3b474e80](https://github.com/google/boringssl/tree/32b51305debe43e38e7bf2c2b13c4ebf3b474e80) [patch a430310d6563c0734ddafca7731570dfb683dc19](https://github.com/google/boringssl/tree/a430310d6563c0734ddafca7731570dfb683dc19)
+* 4.1 [android-14.0.0_r54](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-14.0.0_r54) [538b2a6cf0497cf8bb61ae726a484a3d7a34e54e](https://github.com/google/boringssl/tree/538b2a6cf0497cf8bb61ae726a484a3d7a34e54e)

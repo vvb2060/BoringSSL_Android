@@ -92,6 +92,8 @@ cc_defaults {
     local_include_dirs: ["src/include"],
     export_include_dirs: ["src/include"],
     cflags: ["-DBORINGSSL_IMPLEMENTATION"],
+
+    cmake_snapshot_supported: true,
 }
 
 //// libcrypto, but not libcrypto_baremetal. libcrypto_baremetal is a single
@@ -178,9 +180,6 @@ cc_object {
         "//apex_available:platform",
         "com.android.adbd",
         "com.android.adservices",
-        "com.android.art",
-        "com.android.art.debug",
-        "com.android.art.testing",
         "com.android.btservices",
         "com.android.compos",
         "com.android.conscrypt",
@@ -246,9 +245,6 @@ cc_library {
     vendor_available: true,
     product_available: true,
     native_bridge_supported: true,
-    vndk: {
-        enabled: true,
-    },
     double_loadable: true,
     recovery_available: true,
     defaults: [
@@ -286,9 +282,6 @@ cc_library {
         "//apex_available:platform",
         "com.android.adbd",
         "com.android.adservices",
-        "com.android.art",
-        "com.android.art.debug",
-        "com.android.art.testing",
         "com.android.btservices",
         "com.android.compos",
         "com.android.conscrypt",
@@ -351,8 +344,8 @@ cc_library {
 cc_library_static {
     name: "libcrypto_static",
     visibility: [
-        "//art/build/sdk",
         "//bootable/recovery/updater",
+        "//bootable/deprecated-ota/updater",
         "//external/conscrypt",
         "//external/python/cpython2",
         "//external/rust/crates/quiche",
@@ -378,6 +371,7 @@ cc_library_static {
         "//system/security/keystore/tests",
         "//system/security/provisioner",
         "//test/vts-testcase/security/avb",
+        "//vendor:__subpackages__",
     ],
     min_sdk_version: "29",
     apex_available: [
@@ -410,6 +404,46 @@ cc_library_static {
         "//packages/modules/Virtualization:__subpackages__",
         "//system/security/diced/open_dice",
     ],
+}
+
+// For static linking into the ART module to provide limited functionality:
+// bignums and SHA1 for ELF checksums.
+cc_library_static {
+    name: "libcrypto_for_art",
+    defaults: [
+        "libcrypto_defaults",
+        "boringssl_defaults",
+    ],
+    srcs: [
+        "src/crypto/cpu_*.c",
+        "src/crypto/crypto.c",
+        "src/crypto/err/err.c",
+        "src/crypto/fipsmodule/bn/*.c",
+        "src/crypto/fipsmodule/bn/asm/*.c",
+        "src/crypto/fipsmodule/rand/*.c",
+        "src/crypto/fipsmodule/sha/sha1.c",
+        "src/crypto/mem.c",
+        "src/crypto/stack/stack.c",
+        "src/crypto/thread_pthread.c",
+        "src/gen/crypto/err_data.c",
+    ],
+    target: {
+        linux: {
+            srcs: [
+                "src/gen/bcm/*-linux.S",
+            ],
+        },
+    },
+    visibility: [
+        "//art:__subpackages__",
+        "//libcore:__subpackages__",
+    ],
+    apex_available: [
+        "com.android.art",
+        "com.android.art.debug",
+        "com.android.art.testing",
+    ],
+    min_sdk_version: "29",
 }
 
 // Common defaults for lib*_fuzz_unsafe. These are unsafe and deterministic
@@ -454,9 +488,6 @@ cc_library {
     vendor_available: true,
     product_available: true,
     native_bridge_supported: true,
-    vndk: {
-        enabled: true,
-    },
     host_supported: true,
     defaults: [
         "libssl_sources",
@@ -737,7 +768,7 @@ libbssl_sys_raw_flags = [
 // Rust bindings
 rust_bindgen {
     name: "libbssl_sys_raw",
-    source_stem: "bindings",
+    source_stem: "bssl_sys_bindings",
     crate_name: "bssl_sys_raw",
     host_supported: true,
     wrapper_src: "src/rust/bssl-sys/wrapper.h",
@@ -756,11 +787,10 @@ rust_bindgen {
 
 rust_bindgen {
     name: "libbssl_sys_raw_nostd",
-    source_stem: "bindings",
+    source_stem: "bssl_sys_bindings",
     crate_name: "bssl_sys_raw",
     wrapper_src: "src/rust/bssl-sys/wrapper.h",
     bindgen_flags: [
-        "--raw-line=#![no_std]",
         "--ctypes-prefix=core::ffi",
     ] + libbssl_sys_raw_flags,
     header_libs: [
@@ -822,14 +852,6 @@ cc_library_host_static {
     ],
 }
 
-// Replace the upstream CMake placeholder with a re-export of all of the local bindgen output.
-genrule {
-    name: "libbssl_sys_src",
-    srcs: ["src/rust/bssl-sys/src/lib.rs"],
-    out: ["lib.rs"],
-    cmd: "sed 's@^include!(env!(\"BINDGEN_RS_FILE\"));@pub use bssl_sys_raw::*;@' $(in) > $(out)",
-}
-
 rust_defaults {
     name: "libbssl_sys_defaults",
     host_supported: true,
@@ -839,13 +861,16 @@ rust_defaults {
         "//system/keymint/boringssl",
         "//system/security/prng_seeder",
     ],
-    // Use the modified source with placeholder replaced.
-    srcs: [":libbssl_sys_src"],
+    srcs: [
+        "src/rust/bssl-sys/src/lib.rs",
+        ":libbssl_sys_raw",
+    ],
+    shared_libs: [
+        "libcrypto",
+        "libssl",
+    ],
     vendor_available: true,
     product_available: true,
-    // Since libbssl_sys_raw is not publicly visible, we can't accidentally
-    // force a double-link by linking statically, so do so.
-    rlibs: ["libbssl_sys_raw"],
 }
 
 rust_library {
@@ -858,6 +883,7 @@ rust_library {
         "//apex_available:platform",
         "com.android.virt",
     ],
+    cfgs: ["unsupported_inline_wrappers"],
 }
 
 rust_library_host_rlib {
@@ -866,11 +892,12 @@ rust_library_host_rlib {
     whole_static_libs: [
         "libbssl_rust_support_static",
     ],
+    cfgs: ["unsupported_inline_wrappers"],
 }
 
 genrule {
     name: "libbssl_sys_src_nostd",
-    srcs: [":libbssl_sys_src"],
+    srcs: ["src/rust/bssl-sys/src/lib.rs"],
     out: ["lib.rs"],
     cmd: "(echo '#![no_std]' && cat $(in)) > $(out)",
 }
@@ -881,8 +908,10 @@ rust_library_rlib {
     visibility: [
         "//packages/modules/Virtualization:__subpackages__",
     ],
-    srcs: [":libbssl_sys_src_nostd"],
-    rlibs: ["libbssl_sys_raw_nostd"],
+    srcs: [
+        ":libbssl_sys_src_nostd",
+        ":libbssl_sys_raw_nostd",
+    ],
     prefer_rlib: true,
     no_stdlibs: true,
     stdlibs: [
@@ -892,6 +921,7 @@ rust_library_rlib {
     whole_static_libs: [
         "libbssl_rust_support_baremetal",
     ],
+    cfgs: ["unsupported_inline_wrappers"],
 }
 
 // High-level Rust crate `bssl-crypto`
@@ -899,6 +929,7 @@ rust_library_rlib {
 rust_defaults {
     name: "libbssl_crypto_defaults",
     crate_name: "bssl_crypto",
+    visibility: ["//visibility:public"],
     srcs: ["src/rust/bssl-crypto/src/lib.rs"],
     rustlibs: ["libbssl_sys"],
 }
@@ -910,9 +941,6 @@ rust_library {
     apex_available: [
         "//apex_available:platform",
         "com.android.virt",
-    ],
-    visibility: [
-        "//external/rust/beto-rust/nearby",
     ],
     vendor_available: true,
     product_available: true,

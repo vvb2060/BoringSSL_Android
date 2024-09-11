@@ -17,17 +17,27 @@
   ~ Native test configuration for boringssl_crypto_test.
   -->
 <configuration description="Configuration for BoringSSL native tests">
-   <option name="test-suite-tag" value="mts-conscrypt" />
-   <target_preparer class="com.android.compatibility.common.tradefed.targetprep.FilePusher">
-       <option name="cleanup" value="true" />
-       <option name="push" value="boringssl_crypto_test->/data/local/tmp/boringssl_crypto_test" />
-       <option name="append-bitness" value="true" />
-   </target_preparer>
-   <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer"/>
-   <test class="com.android.tradefed.testtype.GTest" >
-       <option name="native-test-device-path" value="/data/local/tmp" />
-       <option name="module-name" value="boringssl_crypto_test" />
-       <option name="runtime-hint" value="10m" />
-       <option name="native-test-timeout" value="600000" />
-   </test>
+    <option name="test-suite-tag" value="mts-conscrypt"/>
+
+    <target_preparer class="com.android.tradefed.targetprep.RootTargetPreparer">
+        <option name="force-root" value="false" />
+    </target_preparer>
+
+    <target_preparer class="com.android.tradefed.targetprep.PushFilePreparer">
+        <option name="cleanup" value="true" />
+        <option name="push" value="boringssl_crypto_test->/data/local/tmp/boringssl_crypto_test" />
+    </target_preparer>
+
+    <target_preparer class="com.android.tradefed.targetprep.RunCommandTargetPreparer">
+      <option name="run-command" value="ln -s /data/local/tmp/boringssl_crypto_test/*/src /data/local/tmp/boringssl_crypto_test/src"/>
+    </target_preparer>
+
+    <test class="com.android.tradefed.testtype.GTest" >
+        <option name="native-test-device-path" value="/data/local/tmp" />
+        <option name="module-name" value="boringssl_crypto_test" />
+        <option name="runtime-hint" value="10m" />
+        <option name="native-test-timeout" value="600000" />
+        <option name="gtest-env" value="BORINGSSL_TEST_DATA_ROOT=/data/local/tmp/boringssl_crypto_test/src" />
+    </test>
 </configuration>
+

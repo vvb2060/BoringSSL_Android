@@ -34,12 +34,9 @@ jobs:
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --channel=3 platform-tools emulator
 
           sed -i 's|return X509_CERT_DIR;|return "/system/etc/security/cacerts";|' boringssl/src/main/native/src/crypto/x509/x509_def.c
-          sed -i '/gmock.h/d' boringssl/src/main/native/src/crypto/test/gtest_main.cc
-          sed -i 's/InitGoogleMock/InitGoogleTest/' boringssl/src/main/native/src/crypto/test/gtest_main.cc
+          sh copy_test_files.sh
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-        with:
-          gradle-home-cache-cleanup: true
+        uses: gradle/actions/setup-gradle@v4
       - name: Build with Gradle
         run: |
           ./gradlew :a:assemble
@@ -49,14 +46,17 @@ jobs:
         run: |
           ./gradlew :a:allDevicesDebugAndroidTest
       - name: Upload app
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: app
           path: app/build/outputs
           compression-level: 9
       - name: Upload library
+        if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
           name: library
           path: ~/.m2
           compression-level: 9
+          include-hidden-files: true

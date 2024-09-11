@@ -5,6 +5,7 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.zip.ZipFile;
 
 public class MainActivity extends Activity {
@@ -108,22 +110,28 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void startProcess(List<String> command) throws Exception {
-        var process = new ProcessBuilder(command).redirectErrorStream(true).start();
+    public static int startProcess(Context context, List<String> command, Consumer<String> out) throws Exception {
+        var pb = new ProcessBuilder(command).redirectErrorStream(true);
+        var test = new File(context.getCodeCacheDir(), "test");
+        pb.environment().put("BORINGSSL_TEST_DATA_ROOT", test.getAbsolutePath());
+        pb.environment().put("TMPDIR", context.getCacheDir().getAbsolutePath());
+        var process = pb.start();
         var reader = new InputStreamReader(process.getInputStream());
         try (var br = new BufferedReader(reader)) {
             String line = br.readLine();
             while (line != null) {
-                append(line);
+                out.accept(line);
                 if (Thread.interrupted()) {
                     process.destroy();
-                    append("[ kill ]");
+                    out.accept("[ kill ]");
                     break;
                 }
                 line = br.readLine();
             }
         }
-        append("[ exit " + process.waitFor() + " ]");
+        var value = process.waitFor();
+        out.accept("[ exit " + value + " ]");
+        return value;
     }
 
     private static Pair<String, Boolean> nameToPath(String name) {
@@ -154,7 +162,7 @@ public class MainActivity extends Activity {
             append("[ exec " + path + " ]");
             command.set(0, path);
             command.add(0, is64Bit ? "linker64" : "linker");
-            startProcess(command);
+            startProcess(this, command, this::append);
         } catch (Exception e) {
             append(Log.getStackTraceString(e));
         }
@@ -183,7 +191,7 @@ public class MainActivity extends Activity {
         try {
             append("[ exec " + file + " ]");
             command.set(0, file.toString());
-            startProcess(command);
+            startProcess(this, command, this::append);
         } catch (Exception e) {
             append(Log.getStackTraceString(e));
         }
@@ -191,10 +199,37 @@ public class MainActivity extends Activity {
 
     private void exec(List<String> command) {
         if (command.isEmpty()) return;
+        if (command.get(0).startsWith("crypto_test")) {
+            try {
+                copyTestFiles(this, apkPath);
+            } catch (IOException e) {
+                append(Log.getStackTraceString(e));
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             execLinker(command);
         } else {
             execFile(command);
+        }
+    }
+
+    public static void copyTestFiles(Context context, String apkPath) throws IOException {
+        var dir = new File(context.getCodeCacheDir(), "test");
+        if (dir.isDirectory()) return;
+        try (var apk = new ZipFile(apkPath)) {
+            for (var e = apk.entries(); e.hasMoreElements(); ) {
+                var entry = e.nextElement();
+                if (entry.isDirectory()) continue;
+                if (!entry.getName().startsWith("assets/")) continue;
+                var file = new File(dir, entry.getName().substring(7));
+                file.getParentFile().mkdirs();
+                try (var in = apk.getInputStream(entry);
+                     var out = new FileOutputStream(file)) {
+                    var buffer = new byte[8192];
+                    for (var n = in.read(buffer); n >= 0; n = in.read(buffer))
+                        out.write(buffer, 0, n);
+                }
+            }
         }
     }
 

@@ -1,4 +1,5 @@
 LOCAL_PATH := $(call my-dir)
+gtest_path := $(LOCAL_PATH)/src/third_party/googletest
 
 include $(LOCAL_PATH)/sources.mk
 
@@ -22,6 +23,11 @@ LOCAL_STATIC_LIBRARIES  := ssl_static
 LOCAL_SRC_FILES         := $(tool_sources)
 include $(LOCAL_PATH)/build-executable.mk
 
+include $(CLEAR_VARS)
+LOCAL_MODULE            := gtest_main
+LOCAL_SRC_FILES         := $(gtest_path)/googletest/src/gtest-all.cc $(gtest_path)/googlemock/src/gmock-all.cc
+LOCAL_EXPORT_C_INCLUDES := $(gtest_path)/googletest/include $(gtest_path)/googlemock/include
+LOCAL_C_INCLUDES        := $(LOCAL_EXPORT_C_INCLUDES) $(gtest_path)/googletest $(gtest_path)/googlemock
+include $(BUILD_STATIC_LIBRARY)
+
 include $(LOCAL_PATH)/BoringSSL.mk
-$(call import-module,third_party/googletest)
-#$(call import-module,prefab/boringssl)

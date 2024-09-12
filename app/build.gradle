@@ -7,22 +7,22 @@ plugins {
 android {
     compileSdk = 35
     buildToolsVersion = '35.0.0'
-    ndkVersion = '27.0.11902837'
+    ndkVersion = '27.0.12077973'
     namespace = 'io.github.vvb2060.ndk.boringssl.test'
     defaultConfig {
         minSdk = 21
         targetSdk = 35
-        versionCode = 6
-        versionName = 'android-14.0.0_r54'
+        versionCode = 7
+        versionName = 'android-15.0.0_r1'
         testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
         externalNativeBuild {
             ndkBuild {
                 arguments += [ "-j${Runtime.runtime.availableProcessors()}" ]
-                abiFilters += [ "x86", "x86_64", "armeabi-v7a", "arm64-v8a", "riscv64" ]
             }
         }
         ndk {
             debugSymbolLevel = "FULL"
+            abiFilters += [ "x86", "x86_64", "armeabi-v7a", "arm64-v8a", "riscv64" ]
         }
     }
 
@@ -47,6 +47,7 @@ android {
     }
 
     compileOptions {
+        coreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
     }
@@ -89,7 +90,7 @@ android {
 }
 
 dependencies {
-//    implementation 'io.github.vvb2060.ndk:boringssl:4.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.2'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test:rules:1.6.1'
 }

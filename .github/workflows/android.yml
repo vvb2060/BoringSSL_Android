@@ -32,6 +32,8 @@ jobs:
           sudo usermod -aG kvm,render $USER
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --channel=3 platform-tools emulator
+          
+          git apply .github/workflows/0001-add-aes-ige.patch
 
           sed -i 's|return X509_CERT_DIR;|return "/system/etc/security/cacerts";|' boringssl/src/main/native/src/crypto/x509/x509_def.c
           sh copy_test_files.sh

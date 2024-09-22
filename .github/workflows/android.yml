@@ -33,7 +33,7 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --channel=3 platform-tools emulator
 
-          sed -i 's|return X509_CERT_DIR;|return "/system/etc/security/cacerts";|' boringssl/src/main/native/src/crypto/x509/x509_def.c
+          git apply boringssl/src/main/native/patchs/*.patch
           sh copy_test_files.sh
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4

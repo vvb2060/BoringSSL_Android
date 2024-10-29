@@ -60,9 +60,9 @@ publishing {
             group 'io.github.vvb2060.ndk'
             artifactId 'boringssl'
             if (enableLTO.present) {
-                version '5.0-lto-ndk27'
+                version '20241024-lto-ndk27'
             } else {
-                version '5.0'
+                version '20241024'
             }
             afterEvaluate {
                 from components.release

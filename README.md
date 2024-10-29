@@ -2,16 +2,16 @@
 
 boringssl static library prefab for android
 
-This library is based on the [boringssl AOSP repo](https://android.googlesource.com/platform/external/boringssl).
+This library is based on the [boringssl repo](https://github.com/google/boringssl).
 
 ## Integration
 
 Gradle:
 
 ```gradle
-implementation("io.github.vvb2060.ndk:boringssl:5.0")
+implementation("io.github.vvb2060.ndk:boringssl:20241024")
 // or LTO version (~35MiB), it does not strip any debug info
-implementation("io.github.vvb2060.ndk:boringssl:5.0-lto-ndk27")
+implementation("io.github.vvb2060.ndk:boringssl:20241024-lto-ndk27")
 ```
 
 This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.1+):
@@ -71,3 +71,4 @@ target_link_libraries(app boringssl::crypto_static)
 * 4.0 [android-14.0.0_r18](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-14.0.0_r18) [base 32b51305debe43e38e7bf2c2b13c4ebf3b474e80](https://github.com/google/boringssl/tree/32b51305debe43e38e7bf2c2b13c4ebf3b474e80) [patch a430310d6563c0734ddafca7731570dfb683dc19](https://github.com/google/boringssl/tree/a430310d6563c0734ddafca7731570dfb683dc19)
 * 4.1 [android-14.0.0_r54](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-14.0.0_r54) [538b2a6cf0497cf8bb61ae726a484a3d7a34e54e](https://github.com/google/boringssl/tree/538b2a6cf0497cf8bb61ae726a484a3d7a34e54e)
 * 5.0 [android-15.0.0_r1](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-15.0.0_r1) [4d50a595b49a2e7b7017060a4d402c4ee9fe28a2](https://github.com/google/boringssl/tree/4d50a595b49a2e7b7017060a4d402c4ee9fe28a2)
+* 20241024 [0.20241024.0](https://github.com/google/boringssl/releases/tag/0.20241024.0) [781a72b2aa513bbbf01b9bc670b0495a6b115968](https://github.com/google/boringssl/commit/781a72b2aa513bbbf01b9bc670b0495a6b115968)

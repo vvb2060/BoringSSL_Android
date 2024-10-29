@@ -130,7 +130,11 @@ crypto_sources := \
   src/crypto/keccak/keccak.c\
   src/crypto/kyber/kyber.c\
   src/crypto/lhash/lhash.c\
+  src/crypto/md4/md4.c\
+  src/crypto/md5/md5.c\
   src/crypto/mem.c\
+  src/crypto/mldsa/mldsa.c\
+  src/crypto/mlkem/mlkem.cc\
   src/crypto/obj/obj.c\
   src/crypto/obj/obj_xref.c\
   src/crypto/pem/pem_all.c\
@@ -151,26 +155,37 @@ crypto_sources := \
   src/crypto/poly1305/poly1305_vec.c\
   src/crypto/pool/pool.c\
   src/crypto/rand_extra/deterministic.c\
+  src/crypto/rand_extra/fork_detect.c\
   src/crypto/rand_extra/forkunsafe.c\
   src/crypto/rand_extra/getentropy.c\
   src/crypto/rand_extra/ios.c\
   src/crypto/rand_extra/passive.c\
   src/crypto/rand_extra/rand_extra.c\
   src/crypto/rand_extra/trusty.c\
+  src/crypto/rand_extra/urandom.c\
   src/crypto/rand_extra/windows.c\
   src/crypto/rc4/rc4.c\
   src/crypto/refcount.c\
   src/crypto/rsa_extra/rsa_asn1.c\
   src/crypto/rsa_extra/rsa_crypt.c\
+  src/crypto/rsa_extra/rsa_extra.c\
   src/crypto/rsa_extra/rsa_print.c\
+  src/crypto/sha/sha1.c\
+  src/crypto/sha/sha256.c\
+  src/crypto/sha/sha512.c\
   src/crypto/siphash/siphash.c\
-  src/crypto/spx/address.c\
-  src/crypto/spx/fors.c\
-  src/crypto/spx/merkle.c\
+  src/crypto/slhdsa/fors.c\
+  src/crypto/slhdsa/merkle.c\
+  src/crypto/slhdsa/slhdsa.c\
+  src/crypto/slhdsa/thash.c\
+  src/crypto/slhdsa/wots.c\
   src/crypto/spx/spx.c\
+  src/crypto/spx/spx_address.c\
+  src/crypto/spx/spx_fors.c\
+  src/crypto/spx/spx_merkle.c\
+  src/crypto/spx/spx_thash.c\
   src/crypto/spx/spx_util.c\
-  src/crypto/spx/thash.c\
-  src/crypto/spx/wots.c\
+  src/crypto/spx/spx_wots.c\
   src/crypto/stack/stack.c\
   src/crypto/thread.c\
   src/crypto/thread_none.c\
@@ -296,10 +311,6 @@ crypto_sources_asm := \
   src/gen/bcm/ghashv8-armv8-apple.S\
   src/gen/bcm/ghashv8-armv8-linux.S\
   src/gen/bcm/ghashv8-armv8-win.S\
-  src/gen/bcm/md5-586-apple.S\
-  src/gen/bcm/md5-586-linux.S\
-  src/gen/bcm/md5-x86_64-apple.S\
-  src/gen/bcm/md5-x86_64-linux.S\
   src/gen/bcm/p256-armv8-asm-apple.S\
   src/gen/bcm/p256-armv8-asm-linux.S\
   src/gen/bcm/p256-armv8-asm-win.S\
@@ -367,6 +378,10 @@ crypto_sources_asm := \
   src/gen/crypto/chacha20_poly1305_armv8-win.S\
   src/gen/crypto/chacha20_poly1305_x86_64-apple.S\
   src/gen/crypto/chacha20_poly1305_x86_64-linux.S\
+  src/gen/crypto/md5-586-apple.S\
+  src/gen/crypto/md5-586-linux.S\
+  src/gen/crypto/md5-x86_64-apple.S\
+  src/gen/crypto/md5-x86_64-linux.S\
   src/gen/test_support/trampoline-armv4-linux.S\
   src/gen/test_support/trampoline-armv8-apple.S\
   src/gen/test_support/trampoline-armv8-linux.S\
@@ -390,8 +405,6 @@ crypto_sources_nasm := \
   src/gen/bcm/ghash-ssse3-x86_64-win.asm\
   src/gen/bcm/ghash-x86-win.asm\
   src/gen/bcm/ghash-x86_64-win.asm\
-  src/gen/bcm/md5-586-win.asm\
-  src/gen/bcm/md5-x86_64-win.asm\
   src/gen/bcm/p256-x86_64-asm-win.asm\
   src/gen/bcm/p256_beeu-x86_64-asm-win.asm\
   src/gen/bcm/rdrand-x86_64-win.asm\
@@ -411,6 +424,8 @@ crypto_sources_nasm := \
   src/gen/crypto/chacha-x86-win.asm\
   src/gen/crypto/chacha-x86_64-win.asm\
   src/gen/crypto/chacha20_poly1305_x86_64-win.asm\
+  src/gen/crypto/md5-586-win.asm\
+  src/gen/crypto/md5-x86_64-win.asm\
   src/gen/test_support/trampoline-x86-win.asm\
   src/gen/test_support/trampoline-x86_64-win.asm\
 
@@ -519,10 +534,8 @@ crypto_test_sources := \
   src/crypto/fipsmodule/ec/p256_test.cc\
   src/crypto/fipsmodule/ecdsa/ecdsa_test.cc\
   src/crypto/fipsmodule/hkdf/hkdf_test.cc\
-  src/crypto/fipsmodule/md5/md5_test.cc\
   src/crypto/fipsmodule/modes/gcm_test.cc\
   src/crypto/fipsmodule/rand/ctrdrbg_test.cc\
-  src/crypto/fipsmodule/rand/fork_detect_test.cc\
   src/crypto/fipsmodule/service_indicator/service_indicator_test.cc\
   src/crypto/fipsmodule/sha/sha_test.cc\
   src/crypto/hmac_extra/hmac_test.cc\
@@ -532,6 +545,9 @@ crypto_test_sources := \
   src/crypto/keccak/keccak_test.cc\
   src/crypto/kyber/kyber_test.cc\
   src/crypto/lhash/lhash_test.cc\
+  src/crypto/md5/md5_test.cc\
+  src/crypto/mldsa/mldsa_test.cc\
+  src/crypto/mlkem/mlkem_test.cc\
   src/crypto/obj/obj_test.cc\
   src/crypto/pem/pem_test.cc\
   src/crypto/pkcs7/pkcs7_test.cc\
@@ -539,12 +555,14 @@ crypto_test_sources := \
   src/crypto/pkcs8/pkcs8_test.cc\
   src/crypto/poly1305/poly1305_test.cc\
   src/crypto/pool/pool_test.cc\
+  src/crypto/rand_extra/fork_detect_test.cc\
   src/crypto/rand_extra/getentropy_test.cc\
   src/crypto/rand_extra/rand_test.cc\
   src/crypto/refcount_test.cc\
   src/crypto/rsa_extra/rsa_test.cc\
   src/crypto/self_test.cc\
   src/crypto/siphash/siphash_test.cc\
+  src/crypto/slhdsa/slhdsa_test.cc\
   src/crypto/spx/spx_test.cc\
   src/crypto/stack/stack_test.cc\
   src/crypto/test/gtest_main.cc\
@@ -558,4 +576,6 @@ ssl_test_sources := \
   src/crypto/test/gtest_main.cc\
   src/ssl/span_test.cc\
   src/ssl/ssl_c_test.c\
+  src/ssl/ssl_internal_test.cc\
   src/ssl/ssl_test.cc\
+

@@ -33,8 +33,11 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --channel=3 platform-tools emulator
 
-          git apply boringssl/src/main/native/patchs/*.patch
           sh copy_test_files.sh
+          git apply boringssl/src/main/native/patchs/*.patch
+          rm -rf boringssl/src/main/native/src/third_party/googletest
+          curl -sL https://github.com/google/googletest/releases/download/v1.15.2/googletest-1.15.2.tar.gz | tar -xz -C boringssl/src/main/native/src/third_party
+          mv boringssl/src/main/native/src/third_party/googletest-1.15.2 boringssl/src/main/native/src/third_party/googletest
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Build with Gradle

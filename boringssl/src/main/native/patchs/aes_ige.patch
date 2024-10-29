@@ -1,8 +1,8 @@
 Submodule boringssl/src/main/native/src contains modified content
-diff --git a/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c b/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c
+diff --git a/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c.inc b/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c.inc
 index 10d98a6af..42a20ab96 100644
---- a/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c
-+++ b/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c
+--- a/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c.inc
++++ b/boringssl/src/main/native/src/crypto/fipsmodule/aes/mode_wrappers.c.inc
 @@ -122,3 +122,153 @@ void AES_cfb128_encrypt(const uint8_t *in, uint8_t *out, size_t length,
    CRYPTO_cfb128_encrypt(in, out, length, key, ivec, &num_u, enc, AES_encrypt);
    *num = (int)num_u;

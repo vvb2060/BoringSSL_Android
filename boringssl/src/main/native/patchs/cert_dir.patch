@@ -1,8 +1,8 @@
 Submodule boringssl/src/main/native/src contains modified content
-diff --git a/boringssl/src/main/native/src/crypto/x509/x509_def.c b/boringssl/src/main/native/src/crypto/x509/x509_def.c
+diff --git a/boringssl/src/main/native/src/crypto/x509/x509_def.cc b/boringssl/src/main/native/src/crypto/x509/x509_def.cc
 index 1721da5d9..f65698a3f 100644
---- a/boringssl/src/main/native/src/crypto/x509/x509_def.c
-+++ b/boringssl/src/main/native/src/crypto/x509/x509_def.c
+--- a/boringssl/src/main/native/src/crypto/x509/x509_def.cc
++++ b/boringssl/src/main/native/src/crypto/x509/x509_def.cc
 @@ -75,7 +75,7 @@ const char *X509_get_default_private_dir(void) { return X509_PRIVATE_DIR; }
  
  const char *X509_get_default_cert_area(void) { return X509_CERT_AREA; }

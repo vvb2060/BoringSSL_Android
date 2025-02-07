@@ -73,14 +73,8 @@ android {
 
     testOptions {
         devices {
-            api34(ManagedVirtualDevice) {
-                device = "Pixel 2"
-                apiLevel = 34
-                systemImageSource = "aosp-atd"
-                require64Bit = true
-            }
             api30(ManagedVirtualDevice) {
-                device = "Pixel 2"
+                device = "Nexus One"
                 apiLevel = 30
                 systemImageSource = "aosp-atd"
                 require64Bit = true

@@ -6,14 +6,14 @@ plugins {
 
 android {
     compileSdk = 35
-    buildToolsVersion = '35.0.0'
-    ndkVersion = '27.0.12077973'
+    buildToolsVersion = '35.0.1'
+    ndkVersion = '28.0.12674087'
     namespace = 'io.github.vvb2060.ndk.boringssl.test'
     defaultConfig {
         minSdk = 21
         targetSdk = 35
-        versionCode = 20241024
-        versionName = '20241024'
+        versionCode = 20250114
+        versionName = '20250114'
         testInstrumentationRunner = 'androidx.test.runner.AndroidJUnitRunner'
         externalNativeBuild {
             ndkBuild {

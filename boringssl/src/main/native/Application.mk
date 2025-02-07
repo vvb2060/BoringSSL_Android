@@ -5,7 +5,6 @@ APP_CONLYFLAGS     := -std=c17
 APP_CPPFLAGS       := -std=c++23
 APP_STL            := c++_static
 APP_SHORT_COMMANDS := true
-APP_SUPPORT_FLEXIBLE_PAGE_SIZES := true
 
 ifeq ($(enableLTO),1)
 APP_CFLAGS         += -flto

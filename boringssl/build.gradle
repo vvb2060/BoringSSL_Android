@@ -8,8 +8,8 @@ def enableLTO = providers.gradleProperty("enableLTO")
 
 android {
     compileSdk = 35
-    buildToolsVersion = '35.0.0'
-    ndkVersion = '27.0.12077973'
+    buildToolsVersion = '35.0.1'
+    ndkVersion = '28.0.12674087'
     namespace = 'io.github.vvb2060.ndk.boringssl'
     defaultConfig {
         minSdk = 21
@@ -60,9 +60,9 @@ publishing {
             group 'io.github.vvb2060.ndk'
             artifactId 'boringssl'
             if (enableLTO.present) {
-                version '20241024-lto-ndk27'
+                version '20250114-lto-ndk28'
             } else {
-                version '20241024'
+                version '20250114'
             }
             afterEvaluate {
                 from components.release

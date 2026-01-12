@@ -9,9 +9,9 @@ This library is based on the [boringssl repo](https://github.com/google/boringss
 Gradle:
 
 ```gradle
-implementation("io.github.vvb2060.ndk:boringssl:20250114")
+implementation("io.github.vvb2060.ndk:boringssl:20251124")
 // or LTO version (~40MiB), it does not strip any debug info
-implementation("io.github.vvb2060.ndk:boringssl:20250114-lto-ndk28")
+implementation("io.github.vvb2060.ndk:boringssl:20251124-lto-ndk29")
 ```
 
 This library is [Prefab](https://google.github.io/prefab/), so you will need to enable it in your project (Android Gradle Plugin 4.1+):
@@ -73,3 +73,4 @@ target_link_libraries(app boringssl::crypto_static)
 * 5.0 [android-15.0.0_r1](https://android.googlesource.com/platform/external/boringssl/+/refs/tags/android-15.0.0_r1) [4d50a595b49a2e7b7017060a4d402c4ee9fe28a2](https://github.com/google/boringssl/tree/4d50a595b49a2e7b7017060a4d402c4ee9fe28a2)
 * 20241024 [0.20241024.0](https://github.com/google/boringssl/releases/tag/0.20241024.0) [781a72b2aa513bbbf01b9bc670b0495a6b115968](https://github.com/google/boringssl/tree/781a72b2aa513bbbf01b9bc670b0495a6b115968)
 * 20250114 [0.20250114.0](https://github.com/google/boringssl/releases/tag/0.20250114.0)
+* 20251124 [0.20251124.0](https://github.com/google/boringssl/releases/tag/0.20251124.0)

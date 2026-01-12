@@ -10,7 +10,7 @@ Gradle:
 
 ```gradle
 implementation("io.github.vvb2060.ndk:boringssl:20251124")
-// or LTO version (~40MiB), it does not strip any debug info
+// or LTO version (~50MiB), it does not strip any debug info
 implementation("io.github.vvb2060.ndk:boringssl:20251124-lto-ndk29")
 ```
 
